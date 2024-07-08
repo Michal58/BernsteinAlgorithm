@@ -1,4 +1,7 @@
-package CorrectnessBase;
+package CorrectnessBaseImplementation;
+
+import BaseTemplateElements.Attributes;
+import BaseTemplateElements.FunctionalDependency;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,13 +21,13 @@ public class RelationsOperator {
         int countOfAddedAttributes=buildingClosure.size()-startingCountOfAttributes;
         return countOfAddedAttributes;
     }
-    public Set<String> constructTransitiveClosure(Set<String> baseAttributes){
-        Set<String> buildingClosure= new HashSet<>(baseAttributes);
+    public Attributes constructTransitiveClosure(Attributes baseAttributes){
+        Set<String> buildingClosure= new HashSet<>(baseAttributes.setOfAttributes());
         int addedAttributes;
         do
             addedAttributes=addNewAttributesToBuildingClosureAndReturnTheirCount(buildingClosure);
         while (addedAttributes!=0);
-        return buildingClosure;
+        return new Attributes(buildingClosure);
     }
 
 
