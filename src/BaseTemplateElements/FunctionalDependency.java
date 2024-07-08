@@ -1,21 +1,28 @@
+package BaseTemplateElements;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public final class FunctionalDependency {
-    private final HashSet<String> leftAttributes;
-    private final HashSet<String> rightAttributes;
+    private final Attributes leftAttributes;
+    private final Attributes rightAttributes;
     public FunctionalDependency(Collection<String> leftAttributes,Collection<String> rightAttributes){
-        this.leftAttributes=new HashSet<>(leftAttributes);
-        this.rightAttributes=new HashSet<>(rightAttributes);
+        this.leftAttributes=new Attributes(produceSetOfAttributes(leftAttributes));
+        this.rightAttributes=new Attributes(produceSetOfAttributes(rightAttributes));
     }
 
-    public HashSet<String> getLeftAttributes() {
-        return leftAttributes;
+    public Set<String> produceSetOfAttributes(Collection<String> attributes){
+        return new HashSet<>(attributes);
     }
 
-    public HashSet<String> getRightAttributes() {
-        return rightAttributes;
+    public Set<String> getLeftAttributes() {
+        return leftAttributes.setOfAttributes();
+    }
+
+    public Set<String> getRightAttributes() {
+        return rightAttributes.setOfAttributes();
     }
 
     @Override
