@@ -17,11 +17,19 @@ public final class FunctionalDependency {
         return new HashSet<>(attributes);
     }
 
-    public Set<String> getLeftAttributes() {
+    public Attributes getLeftAttributes() {
+        return leftAttributes;
+    }
+
+    public Set<String> setOfLeftAttributes(){
         return leftAttributes.setOfAttributes();
     }
 
-    public Set<String> getRightAttributes() {
+    public Attributes getRightAttributes() {
+        return rightAttributes;
+    }
+
+    public Set<String> setOfRightAttributes(){
         return rightAttributes.setOfAttributes();
     }
 
@@ -35,5 +43,9 @@ public final class FunctionalDependency {
     @Override
     public int hashCode() {
         return Objects.hash(leftAttributes, rightAttributes);
+    }
+
+    public FunctionalDependency getCopy(){
+        return new FunctionalDependency(leftAttributes.setOfAttributes(),rightAttributes.setOfAttributes());
     }
 }

@@ -25,11 +25,11 @@ public abstract class BernsteinAlgorithmTemplate {
     }
     public Set<RelationalSchema> generateNormalizedDatabaseSchema(){
         // step 1
-        Set<FunctionalDependency> reducedAttributes=
+        Set<FunctionalDependency> dependenciesWithReducedLeftAttributes=
                 eliminateExtraneousAttributesFromLeftSidesOfDependencies();
         // step 2
         Set<FunctionalDependency> minimalCover=
-                findMinimalCoverOfFunctionalDependencies(reducedAttributes);
+                findMinimalCoverOfFunctionalDependencies(dependenciesWithReducedLeftAttributes);
         // step 3
         Map<Attributes, GroupOfFunctionalDependencies> groupedDependencies=
                 groupMinimalCoverByLeftSides(minimalCover);
@@ -53,7 +53,7 @@ public abstract class BernsteinAlgorithmTemplate {
     }
 
     public abstract Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies();
-    public abstract Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> reducedAttributes);
+    public abstract Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes);
     public abstract Map<Attributes, GroupOfFunctionalDependencies> groupMinimalCoverByLeftSides(Set<FunctionalDependency> minimalCover);
     public abstract BijectionDependenciesAndGroups mergeDependenciesWithMatchingRightSidesOfElementsFromOneGroupWithLeftSidesOfAnother(Map<Attributes, GroupOfFunctionalDependencies> entryGroups);
     public abstract Set<GroupOfFunctionalDependencies> removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies);
