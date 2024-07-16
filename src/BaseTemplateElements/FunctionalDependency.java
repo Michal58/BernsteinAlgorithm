@@ -45,6 +45,11 @@ public final class FunctionalDependency {
         return Objects.hash(leftAttributes, rightAttributes);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s->%s",setOfLeftAttributes(),setOfRightAttributes());
+    }
+
     public FunctionalDependency getCopy(){
         return new FunctionalDependency(leftAttributes.setOfAttributes(),rightAttributes.setOfAttributes());
     }
