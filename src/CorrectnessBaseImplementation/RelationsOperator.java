@@ -15,8 +15,8 @@ public class RelationsOperator {
     public int addNewAttributesToBuildingClosureAndReturnTheirCount(Set<String> buildingClosure){
         int startingCountOfAttributes=buildingClosure.size();
         for (FunctionalDependency currentDependency:functionalDependencies){
-            if (buildingClosure.containsAll(currentDependency.getLeftAttributes()))
-                buildingClosure.addAll(currentDependency.getRightAttributes());
+            if (buildingClosure.containsAll(currentDependency.setOfLeftAttributes()))
+                buildingClosure.addAll(currentDependency.setOfRightAttributes());
         }
         int countOfAddedAttributes=buildingClosure.size()-startingCountOfAttributes;
         return countOfAddedAttributes;
@@ -28,6 +28,11 @@ public class RelationsOperator {
             addedAttributes=addNewAttributesToBuildingClosureAndReturnTheirCount(buildingClosure);
         while (addedAttributes!=0);
         return new Attributes(buildingClosure);
+    }
+
+    public boolean checkIfThereIsTransitiveDependency(FunctionalDependency possibleDependency){
+        Attributes transitiveClosure=constructTransitiveClosure(possibleDependency.getLeftAttributes());
+        return transitiveClosure.setOfAttributes().containsAll(possibleDependency.setOfRightAttributes());
     }
 
 
