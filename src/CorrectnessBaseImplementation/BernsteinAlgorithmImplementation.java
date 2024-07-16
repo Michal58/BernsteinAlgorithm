@@ -7,9 +7,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BernsteinIAlgorithmImplementation extends BernsteinAlgorithmTemplate {
+public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate {
 
-    public BernsteinIAlgorithmImplementation(Set<FunctionalDependency> functionalDependencies) {
+    public BernsteinAlgorithmImplementation(Set<FunctionalDependency> functionalDependencies) {
         super(functionalDependencies);
     }
 
