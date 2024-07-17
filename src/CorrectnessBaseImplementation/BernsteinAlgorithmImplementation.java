@@ -15,13 +15,13 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
 
     @Override
     public Set<FunctionalDependency> getSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies) {
-        return new OperationalFunctionalDependencies(dependencies);
+        return new OperationalSetOfFunctionalDependencies(dependencies);
     }
 
     @Override
     public Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies() {
-        Set<FunctionalDependency> reducedLeftSideDependencies=new OperationalFunctionalDependencies();
-        OperationalFunctionalDependencies baseDependencies=(OperationalFunctionalDependencies) getFunctionalDependencies();
+        Set<FunctionalDependency> reducedLeftSideDependencies=new OperationalSetOfFunctionalDependencies();
+        OperationalSetOfFunctionalDependencies baseDependencies=(OperationalSetOfFunctionalDependencies) getFunctionalDependencies();
 
         for (FunctionalDependency dependency : baseDependencies) {
             FunctionalDependency copyOfDependency=dependency.getCopy();
@@ -55,7 +55,7 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
     @Override
     public Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes) {
         Set<FunctionalDependency> doubleSideReducedDependencies=transformDependenciesWithSplittingRightSides(functionalDependenciesWithReducedLeftAttributes);
-        OperationalFunctionalDependencies minimalCover=new OperationalFunctionalDependencies(doubleSideReducedDependencies);
+        OperationalSetOfFunctionalDependencies minimalCover=new OperationalSetOfFunctionalDependencies(doubleSideReducedDependencies);
 
         for (FunctionalDependency doubleSideReducedDependency : doubleSideReducedDependencies) {
             minimalCover.remove(doubleSideReducedDependency);
@@ -122,11 +122,11 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
         LinkedList<Attributes> leftSides= new LinkedList<>(initialGroups.keySet());
         Iterator<Attributes> iteratorOfLeftSides=leftSides.iterator();
 
-        OperationalFunctionalDependencies allDependencies= initialGroups
+        OperationalSetOfFunctionalDependencies allDependencies= initialGroups
                 .values()
                 .stream()
                 .flatMap(Collection::stream)
-                .collect(Collectors.toCollection(OperationalFunctionalDependencies::new));
+                .collect(Collectors.toCollection(OperationalSetOfFunctionalDependencies::new));
 
         while (iteratorOfLeftSides.hasNext()){
             Attributes potentialBijectionLeftSide=iteratorOfLeftSides.next();
@@ -170,13 +170,13 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
     @Override
     public Map<Attributes,GroupOfFunctionalDependencies> removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies) {
         Set<FunctionalDependency> bijectionDependencies=potentiallyPossibleTransitiveDependencies.bijectionsDependencies();
-        OperationalFunctionalDependencies allDependencies=
+        OperationalSetOfFunctionalDependencies allDependencies=
                 potentiallyPossibleTransitiveDependencies
                         .groupsOfFunctionalDependencies()
                         .values()
                         .stream()
                         .flatMap(Collection::stream)
-                        .collect(Collectors.toCollection(OperationalFunctionalDependencies::new));
+                        .collect(Collectors.toCollection(OperationalSetOfFunctionalDependencies::new));
         allDependencies.addAll(bijectionDependencies);
 
         for (GroupOfFunctionalDependencies groupOfDependencies : potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies().values()) {

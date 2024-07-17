@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OperationalFunctionalDependencies extends HashSet<FunctionalDependency>{
-    public OperationalFunctionalDependencies(){
+public class OperationalSetOfFunctionalDependencies extends HashSet<FunctionalDependency>{
+    public OperationalSetOfFunctionalDependencies(){
         super();
     }
-    public OperationalFunctionalDependencies(Collection<FunctionalDependency> dependencies){
+    public OperationalSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies){
         super(dependencies);
     }
 
