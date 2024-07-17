@@ -3,26 +3,30 @@ package CorrectnessBaseImplementation;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RelationsOperator {
-    private Set<FunctionalDependency> functionalDependencies;
-    public RelationsOperator(Set<FunctionalDependency> functionalDependencies){
-        this.functionalDependencies=functionalDependencies;
+public class OperationalFunctionalDependencies extends HashSet<FunctionalDependency>{
+    public OperationalFunctionalDependencies(){
+        super();
+    }
+    public OperationalFunctionalDependencies(Collection<FunctionalDependency> dependencies){
+        super(dependencies);
     }
 
     public int addNewAttributesToBuildingClosureAndReturnTheirCount(Set<String> buildingClosure){
         int startingCountOfAttributes=buildingClosure.size();
-        for (FunctionalDependency currentDependency:functionalDependencies){
-            if (buildingClosure.containsAll(currentDependency.setOfLeftAttributes()))
-                buildingClosure.addAll(currentDependency.setOfRightAttributes());
+        for (FunctionalDependency currentDependency:this){
+            if (buildingClosure.containsAll(currentDependency.getLeftAttributes()))
+                buildingClosure.addAll(currentDependency.getRightAttributes());
         }
         int countOfAddedAttributes=buildingClosure.size()-startingCountOfAttributes;
         return countOfAddedAttributes;
     }
+
     public Attributes constructTransitiveClosure(Attributes baseAttributes){
-        Set<String> buildingClosure= new HashSet<>(baseAttributes.setOfAttributes());
+        Set<String> buildingClosure= new HashSet<>(baseAttributes);
         int addedAttributes;
         do
             addedAttributes=addNewAttributesToBuildingClosureAndReturnTheirCount(buildingClosure);
@@ -32,8 +36,6 @@ public class RelationsOperator {
 
     public boolean checkIfThereIsTransitiveDependency(FunctionalDependency possibleDependency){
         Attributes transitiveClosure=constructTransitiveClosure(possibleDependency.getLeftAttributes());
-        return transitiveClosure.setOfAttributes().containsAll(possibleDependency.setOfRightAttributes());
+        return transitiveClosure.containsAll(possibleDependency.getRightAttributes());
     }
-
-
 }

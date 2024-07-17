@@ -14,20 +14,22 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
     }
 
     @Override
-    public Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies() {
-        Set<FunctionalDependency> reducedLeftSideDependencies=new HashSet<>();
-        Set<FunctionalDependency> actualDependencies=getFunctionalDependencies();
-        RelationsOperator operator=new RelationsOperator(actualDependencies);
+    public Set<FunctionalDependency> getSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies) {
+        return new OperationalFunctionalDependencies(dependencies);
+    }
 
-        for (FunctionalDependency dependency : actualDependencies) {
+    @Override
+    public Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies() {
+        Set<FunctionalDependency> reducedLeftSideDependencies=new OperationalFunctionalDependencies();
+        OperationalFunctionalDependencies baseDependencies=(OperationalFunctionalDependencies) getFunctionalDependencies();
+
+        for (FunctionalDependency dependency : baseDependencies) {
             FunctionalDependency copyOfDependency=dependency.getCopy();
-            for (String leftAttribute : dependency.setOfLeftAttributes()) {
-                copyOfDependency.setOfLeftAttributes().remove(leftAttribute);
-                boolean areTransitiveClosuresTheSame=
-                        operator.constructTransitiveClosure(copyOfDependency.getLeftAttributes())
-                        .equals(operator.constructTransitiveClosure(dependency.getLeftAttributes()));
-                if (!areTransitiveClosuresTheSame)
-                    copyOfDependency.setOfLeftAttributes().add(leftAttribute);
+            for (String leftAttribute : dependency.getLeftAttributes()) {
+                copyOfDependency.getLeftAttributes().remove(leftAttribute);
+                boolean wasLeftAttributeExtraneous=baseDependencies.checkIfThereIsTransitiveDependency(copyOfDependency);
+                if (!wasLeftAttributeExtraneous)
+                    copyOfDependency.getLeftAttributes().add(leftAttribute);
             }
             reducedLeftSideDependencies.add(copyOfDependency);
         }
@@ -36,9 +38,9 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
 
     public Set<FunctionalDependency> splitRightSideOfFunctionalDependency(FunctionalDependency dependencyToSplit){
         Set<FunctionalDependency> splitDependencies=new HashSet<>();
-        for (String rightAttribute : dependencyToSplit.setOfRightAttributes()) {
+        for (String rightAttribute : dependencyToSplit.getRightAttributes()) {
             Set<String> rightAttributeAsSet=new HashSet<>(Collections.singletonList(rightAttribute));
-            splitDependencies.add(new FunctionalDependency(dependencyToSplit.setOfLeftAttributes(),rightAttributeAsSet));
+            splitDependencies.add(new FunctionalDependency(dependencyToSplit.getLeftAttributes(),rightAttributeAsSet));
         }
         return splitDependencies;
     }
@@ -52,33 +54,30 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
 
     @Override
     public Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes) {
-        Set<FunctionalDependency> doubleSideSplitDependencies=transformDependenciesWithSplittingRightSides(functionalDependenciesWithReducedLeftAttributes);
-        Set<FunctionalDependency> minimalCover=new HashSet<>(doubleSideSplitDependencies);
-        for (FunctionalDependency doubleSideSplitDependency : doubleSideSplitDependencies) {
-            minimalCover.remove(doubleSideSplitDependency);
-            RelationsOperator modifiedDependenciesOperator=new RelationsOperator(minimalCover);
-            Attributes removedDependencyClosure=modifiedDependenciesOperator.constructTransitiveClosure(doubleSideSplitDependency.getLeftAttributes());
-            boolean doesDependencyStillAppear= removedDependencyClosure
-                    .setOfAttributes()
-                    .containsAll(doubleSideSplitDependency.setOfRightAttributes());
+        Set<FunctionalDependency> doubleSideReducedDependencies=transformDependenciesWithSplittingRightSides(functionalDependenciesWithReducedLeftAttributes);
+        OperationalFunctionalDependencies minimalCover=new OperationalFunctionalDependencies(doubleSideReducedDependencies);
+
+        for (FunctionalDependency doubleSideReducedDependency : doubleSideReducedDependencies) {
+            minimalCover.remove(doubleSideReducedDependency);
+            boolean doesDependencyStillAppear= minimalCover.checkIfThereIsTransitiveDependency(doubleSideReducedDependency);
             if (!doesDependencyStillAppear)
-                minimalCover.add(doubleSideSplitDependency);
+                minimalCover.add(doubleSideReducedDependency);
         }
         return minimalCover;
     }
 
     @Override
-    public Map<Attributes, GroupOfFunctionalDependencies> groupMinimalCoverByLeftSides(Set<FunctionalDependency> minimalCover) {
+    public Map<Attributes, GroupOfFunctionalDependencies> groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover) {
         Map<Attributes,GroupOfFunctionalDependencies> leftAttributesDictionary=new HashMap<>();
         for (FunctionalDependency dependency : minimalCover) {
             if (!leftAttributesDictionary.containsKey(dependency.getLeftAttributes())) {
-                Attributes newKey=new Attributes(dependency.getLeftAttributes().setOfAttributes());
+                Attributes newKey=new Attributes(dependency.getLeftAttributes());
                 Set<FunctionalDependency> setOfSingleDependency=new HashSet<>(List.of(dependency));
                 leftAttributesDictionary.put(newKey,new GroupOfFunctionalDependencies(setOfSingleDependency));
             }
             else {
                 GroupOfFunctionalDependencies createdGroup=leftAttributesDictionary.get(dependency.getLeftAttributes());
-                createdGroup.functionalDependencies().add(dependency);
+                createdGroup.add(dependency);
             }
         }
 
@@ -90,26 +89,26 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
         groupOfBijections.add(rightToLeftDependency);
     }
 
-    public void removeDependenciesWithRightSidesWhichArePartsOfBijectionAttributes(Collection<FunctionalDependency> dependenciesFromGroup,Attributes bijectionAttributes){
+    public void removeDependenciesWhichRightSidesArePartsOfOppositeBijectionAttributes(Collection<FunctionalDependency> dependenciesFromGroup, Attributes oppositeBijectionAttributes){
         Iterator<FunctionalDependency> dependencyIterator=dependenciesFromGroup.iterator();
         while (dependencyIterator.hasNext()) {
             FunctionalDependency currentDependency=dependencyIterator.next();
             boolean isRightSideOfCurrentDependencyPartOfBijectionAttributes =
-                    bijectionAttributes.setOfAttributes().containsAll(currentDependency.setOfRightAttributes());
+                    oppositeBijectionAttributes.containsAll(currentDependency.getRightAttributes());
             if (isRightSideOfCurrentDependencyPartOfBijectionAttributes)
                 dependencyIterator.remove();
         }
     }
 
     public void updateGroup(GroupOfFunctionalDependencies firstGroup, GroupOfFunctionalDependencies secondGroup){
-        firstGroup.functionalDependencies().addAll(secondGroup.functionalDependencies());
+        firstGroup.addAll(secondGroup);
     }
     public void mergeGroupsOfDependenciesByUpdatingGroupOfFirstAttributes(Map<Attributes,GroupOfFunctionalDependencies> groups, Attributes firstBijectionAttributes, Attributes secondBijectionAttributes){
         GroupOfFunctionalDependencies leftSideGroup=groups.get(firstBijectionAttributes);
         GroupOfFunctionalDependencies rightSideGroup=groups.get(secondBijectionAttributes);
 
-        removeDependenciesWithRightSidesWhichArePartsOfBijectionAttributes(leftSideGroup.functionalDependencies(),secondBijectionAttributes);
-        removeDependenciesWithRightSidesWhichArePartsOfBijectionAttributes(rightSideGroup.functionalDependencies(),firstBijectionAttributes);
+        removeDependenciesWhichRightSidesArePartsOfOppositeBijectionAttributes(leftSideGroup,secondBijectionAttributes);
+        removeDependenciesWhichRightSidesArePartsOfOppositeBijectionAttributes(rightSideGroup,firstBijectionAttributes);
 
         updateGroup(leftSideGroup,rightSideGroup);
         groups.remove(secondBijectionAttributes);
@@ -123,23 +122,22 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
         LinkedList<Attributes> leftSides= new LinkedList<>(initialGroups.keySet());
         Iterator<Attributes> iteratorOfLeftSides=leftSides.iterator();
 
-        Set<FunctionalDependency> allDependencies= initialGroups
+        OperationalFunctionalDependencies allDependencies= initialGroups
                 .values()
                 .stream()
-                .flatMap(group -> group.functionalDependencies().stream())
-                .collect(Collectors.toSet());
-        RelationsOperator operator=new RelationsOperator(allDependencies);
+                .flatMap(Collection::stream)
+                .collect(Collectors.toCollection(OperationalFunctionalDependencies::new));
 
         while (iteratorOfLeftSides.hasNext()){
             Attributes potentialBijectionLeftSide=iteratorOfLeftSides.next();
             iteratorOfLeftSides.remove();
             for (Attributes potentialBijectionRightSide : leftSides) {
                 FunctionalDependency leftToRightDependency=
-                        new FunctionalDependency(potentialBijectionLeftSide.setOfAttributes(),potentialBijectionRightSide.setOfAttributes());
-                boolean isThereDependencyFromLeftToRight=operator.checkIfThereIsTransitiveDependency(leftToRightDependency);
+                        new FunctionalDependency(potentialBijectionLeftSide,potentialBijectionRightSide);
+                boolean isThereDependencyFromLeftToRight=allDependencies.checkIfThereIsTransitiveDependency(leftToRightDependency);
                 FunctionalDependency rightToLeftDependency=
-                        new FunctionalDependency(potentialBijectionRightSide.setOfAttributes(),potentialBijectionLeftSide.setOfAttributes());
-                boolean isThereDependencyFromRightToLeft=operator.checkIfThereIsTransitiveDependency(rightToLeftDependency);
+                        new FunctionalDependency(potentialBijectionRightSide,potentialBijectionLeftSide);
+                boolean isThereDependencyFromRightToLeft=allDependencies.checkIfThereIsTransitiveDependency(rightToLeftDependency);
                 boolean isThereBijection=isThereDependencyFromLeftToRight&&isThereDependencyFromRightToLeft;
                 if (isThereBijection){
                     groupBijectionDependencies(bijectionDependencies,leftToRightDependency,rightToLeftDependency);
@@ -153,7 +151,7 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
     }
 
     public void removeAllEmptyGroups(Collection<GroupOfFunctionalDependencies> groupsOfDependencies){
-        groupsOfDependencies.removeIf(group->group.functionalDependencies().isEmpty());
+        groupsOfDependencies.removeIf(HashSet::isEmpty);
     }
     public void assignBijectionDependenciesToTheirGroups(Set<FunctionalDependency> bijectionDependencies,Map<Attributes,GroupOfFunctionalDependencies> allGroups){
         for (FunctionalDependency bijectionDependency : bijectionDependencies) {
@@ -163,31 +161,30 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
             // at this point there must exist group which have identical left or right side like in bijection dependency
 
             if (allGroups.containsKey(currentLeftAttributes))
-                allGroups.get(currentLeftAttributes).functionalDependencies().add(bijectionDependency);
+                allGroups.get(currentLeftAttributes).add(bijectionDependency);
             else
-                allGroups.get(currentRightAttributes).functionalDependencies().add(bijectionDependency);
+                allGroups.get(currentRightAttributes).add(bijectionDependency);
         }
         removeAllEmptyGroups(allGroups.values());
     }
     @Override
     public Map<Attributes,GroupOfFunctionalDependencies> removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies) {
         Set<FunctionalDependency> bijectionDependencies=potentiallyPossibleTransitiveDependencies.bijectionsDependencies();
-        Set<FunctionalDependency> allDependencies=
+        OperationalFunctionalDependencies allDependencies=
                 potentiallyPossibleTransitiveDependencies
                         .groupsOfFunctionalDependencies()
                         .values()
                         .stream()
-                        .flatMap(group->group.functionalDependencies().stream())
-                        .collect(Collectors.toSet());
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toCollection(OperationalFunctionalDependencies::new));
         allDependencies.addAll(bijectionDependencies);
 
-        RelationsOperator operator=new RelationsOperator(allDependencies);
         for (GroupOfFunctionalDependencies groupOfDependencies : potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies().values()) {
-            Iterator<FunctionalDependency> dependenciesInGroupIterator = groupOfDependencies.functionalDependencies().iterator();
+            Iterator<FunctionalDependency> dependenciesInGroupIterator = groupOfDependencies.iterator();
             while (dependenciesInGroupIterator.hasNext()) {
                 FunctionalDependency currentDependency = dependenciesInGroupIterator.next();
                 allDependencies.remove(currentDependency);
-                boolean areDependenciesKept = operator.checkIfThereIsTransitiveDependency(currentDependency);
+                boolean areDependenciesKept = allDependencies.checkIfThereIsTransitiveDependency(currentDependency);
                 if (!areDependenciesKept)
                     allDependencies.add(currentDependency);
                 else
@@ -205,9 +202,8 @@ public class BernsteinAlgorithmImplementation extends BernsteinAlgorithmTemplate
                 new RelationalSchema(new Attributes(
                         nonTransitiveDependencies
                                 .get(attributes)
-                                .functionalDependencies()
                                 .stream()
-                                .flatMap(dependency->Stream.concat(dependency.setOfLeftAttributes().stream(),dependency.setOfRightAttributes().stream()))
+                                .flatMap(dependency->Stream.concat(dependency.getLeftAttributes().stream(),dependency.getRightAttributes().stream()))
                                 .collect(Collectors.toSet()))
                 ,attributes);
         Set<RelationalSchema> schemas=
