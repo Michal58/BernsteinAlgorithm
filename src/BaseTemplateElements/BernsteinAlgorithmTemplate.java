@@ -1,13 +1,14 @@
 package BaseTemplateElements;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class BernsteinAlgorithmTemplate {
     private Set<FunctionalDependency> functionalDependencies;
-    public BernsteinAlgorithmTemplate(Set<FunctionalDependency> functionalDependencies){
-        this.functionalDependencies= new HashSet<>(functionalDependencies);
+    public BernsteinAlgorithmTemplate(Collection<FunctionalDependency> functionalDependencies){
+        this.functionalDependencies= getSetOfFunctionalDependencies(functionalDependencies);
     }
     public Set<RelationalSchema> generateNormalizedDatabaseSchema(){
         // main purpose of structures e.g. RelationalSchema, Attributes - is to simplification
@@ -36,11 +37,10 @@ public abstract class BernsteinAlgorithmTemplate {
 
         return finalDatabaseSchema;
     }
-
     public Set<FunctionalDependency> getFunctionalDependencies() {
         return functionalDependencies;
     }
-
+    public abstract Set<FunctionalDependency> getSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies);
     public abstract Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies();
     public abstract Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes);
     public abstract Map<Attributes, GroupOfFunctionalDependencies> groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover);
