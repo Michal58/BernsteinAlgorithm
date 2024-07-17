@@ -1,10 +1,10 @@
 package BaseTemplateElements;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 
-public record GroupOfFunctionalDependencies(Set<FunctionalDependency> functionalDependencies) {
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof GroupOfFunctionalDependencies && functionalDependencies.equals(((GroupOfFunctionalDependencies) obj).functionalDependencies);
+public class GroupOfFunctionalDependencies extends HashSet<FunctionalDependency> {
+    public GroupOfFunctionalDependencies(Collection<FunctionalDependency> functionalDependencies){
+        super(functionalDependencies);
     }
 }

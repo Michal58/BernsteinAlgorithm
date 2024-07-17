@@ -1,16 +1,10 @@
 package BaseTemplateElements;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 
-public record Attributes(Set<String> setOfAttributes) {
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Attributes
-                && this.setOfAttributes.equals(((Attributes) o).setOfAttributes);
-    }
-
-    @Override
-    public int hashCode() {
-        return setOfAttributes.hashCode();
+public class Attributes extends HashSet<String> {
+    public Attributes(Collection<String> setOfAttributes){
+        super(setOfAttributes);
     }
 }

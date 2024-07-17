@@ -21,16 +21,8 @@ public final class FunctionalDependency {
         return leftAttributes;
     }
 
-    public Set<String> setOfLeftAttributes(){
-        return leftAttributes.setOfAttributes();
-    }
-
     public Attributes getRightAttributes() {
         return rightAttributes;
-    }
-
-    public Set<String> setOfRightAttributes(){
-        return rightAttributes.setOfAttributes();
     }
 
     @Override
@@ -47,10 +39,10 @@ public final class FunctionalDependency {
 
     @Override
     public String toString() {
-        return String.format("%s->%s",setOfLeftAttributes(),setOfRightAttributes());
+        return String.format("%s->%s",leftAttributes,rightAttributes);
     }
 
     public FunctionalDependency getCopy(){
-        return new FunctionalDependency(leftAttributes.setOfAttributes(),rightAttributes.setOfAttributes());
+        return new FunctionalDependency(leftAttributes,rightAttributes);
     }
 }

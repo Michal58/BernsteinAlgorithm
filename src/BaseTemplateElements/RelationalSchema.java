@@ -4,8 +4,8 @@ import java.util.Set;
 
 public record RelationalSchema(Attributes allAttributes, Attributes key) {
     public RelationalSchema(Attributes allAttributes, Attributes key){
-        this.allAttributes=createAttributesFromSet(allAttributes.setOfAttributes());
-        this.key=createAttributesFromSet(key.setOfAttributes());
+        this.allAttributes=createAttributesFromSet(allAttributes);
+        this.key=createAttributesFromSet(key);
     }
 
     private Attributes createAttributesFromSet(Set<String> actualAttributes){

@@ -21,7 +21,7 @@ public abstract class BernsteinAlgorithmTemplate {
                 findMinimalCoverOfFunctionalDependencies(dependenciesWithReducedLeftAttributes);
         // step 3
         Map<Attributes, GroupOfFunctionalDependencies> groupedDependencies=
-                groupMinimalCoverByLeftSides(minimalCover);
+                groupDependenciesByLeftSides(minimalCover);
         // step 4
         BijectionDependenciesAndGroups mergedGroups=
                 groupBijectionDependenciesAndMergeTheirGroups(groupedDependencies);
@@ -43,7 +43,7 @@ public abstract class BernsteinAlgorithmTemplate {
 
     public abstract Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies();
     public abstract Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes);
-    public abstract Map<Attributes, GroupOfFunctionalDependencies> groupMinimalCoverByLeftSides(Set<FunctionalDependency> minimalCover);
+    public abstract Map<Attributes, GroupOfFunctionalDependencies> groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover);
     public abstract BijectionDependenciesAndGroups groupBijectionDependenciesAndMergeTheirGroups(Map<Attributes, GroupOfFunctionalDependencies> initialGroups);
     public abstract Map<Attributes,GroupOfFunctionalDependencies> removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies);
     public abstract Set<RelationalSchema> createRelationalSchemasFromGroupsOfFunctionalDependencies(Map<Attributes,GroupOfFunctionalDependencies> nonTransitiveDependencies);
