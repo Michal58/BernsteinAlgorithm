@@ -19,6 +19,7 @@ public class StringFormOfFunctionalDependency {
                     SET_FORM_CLOSING_FORMAT);
     public static final String DEPENDENCY_OPERAND="->";
     public static final String FUNCTIONAL_DEPENDENCY_FORMAT=String.format("^%s%s%s$",ATTRIBUTE_SET_FORMAT,DEPENDENCY_OPERAND,ATTRIBUTE_SET_FORMAT);
+    public static final String INVALID_FORMAT_ERROR_INFO="Format of given dependency is invalid";
     public final String stringFormOfDependency;
     public StringFormOfFunctionalDependency(String stringFormOfDependency){
         this.stringFormOfDependency=stringFormOfDependency;
@@ -35,7 +36,13 @@ public class StringFormOfFunctionalDependency {
         return new HashSet<>(Arrays.asList(extractedAttributes));
     }
 
+    public boolean checkStringValidity(){
+        return stringFormOfDependency.matches(FUNCTIONAL_DEPENDENCY_FORMAT);
+    }
+
     public PairOfExtractedSets extractSets(){
+        if (!checkStringValidity())
+            throw new RuntimeException(INVALID_FORMAT_ERROR_INFO);
         String[] twoSets=stringFormOfDependency.split(DEPENDENCY_OPERAND);
         Set<String> leftSet=convertStringFormOfSetToActualSet(twoSets[0]);
         Set<String> rightSet=convertStringFormOfSetToActualSet(twoSets[1]);

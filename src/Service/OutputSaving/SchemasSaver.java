@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.Set;
 
 public class SchemasSaver {
-    private final static String outputFormat ="%50s%50s";
+    private final static String outputFormat ="%-50s%-50s";
     private final static String leftHeaderTitle="key of schema";
     private final static String rightHeaderTitle="attributes of schema";
     private Set<RelationalSchema> schemasToSave;
@@ -21,16 +21,21 @@ public class SchemasSaver {
         saveWriter.newLine();
     }
 
+    private void writeSchemasToFileWithWriter(BufferedWriter saveWriter) throws IOException{
+        writeHeader(saveWriter);
+
+        for (RelationalSchema schema : schemasToSave) {
+            saveWriter.write(String.format(outputFormat, schema.key(), schema.allAttributes()));
+            saveWriter.newLine();
+        }
+    }
+
     public void save() throws IOException {
         File saveFile=new File(filePathToSave);
         saveFile.createNewFile();
 
-        BufferedWriter saveWriter=new BufferedWriter(new FileWriter(saveFile));
-        writeHeader(saveWriter);
-
-        for (RelationalSchema schema : schemasToSave) {
-            saveWriter.write(String.format(outputFormat,schema.key(),schema.allAttributes()));
-            saveWriter.newLine();
+        try (BufferedWriter saveWriter=new BufferedWriter(new FileWriter(saveFile))) {
+            writeSchemasToFileWithWriter(saveWriter);
         }
     }
 }
