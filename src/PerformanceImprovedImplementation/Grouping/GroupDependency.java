@@ -1,28 +1,38 @@
 package PerformanceImprovedImplementation.Grouping;
 
+import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
+import CorrectnessBaseImplementation.Structures.SimpleFunctionalDependency;
+
+import java.util.Collection;
 
 public class GroupDependency extends FunctionalDependency{
     private final FunctionalDependency actualDependency;
     private DependenciesGrouping associatedGroup;
     public GroupDependency(FunctionalDependency actualDependency) {
-        super(NullContent.CONFIRMATION);
+        super();
         this.actualDependency =actualDependency;
     }
+
+    @Override
+    public Attributes produceSetOfAttributesFromStrings(Collection<String> attributes) {
+        throw new UnsupportedOperationException();
+    }
+
     public GroupDependency(FunctionalDependency actualDependency, DependenciesGrouping associatedGroup){
-        super(NullContent.CONFIRMATION);
+        super();
         this.actualDependency=actualDependency;
         this.associatedGroup=associatedGroup;
     }
 
     public GroupDependency(Attributes leftAttributes,Attributes rightAttributes,DependenciesGrouping associatedGroup){
-        super(NullContent.CONFIRMATION);
-        actualDependency=new FunctionalDependency(leftAttributes,rightAttributes);
+        super();
+        actualDependency=new SimpleFunctionalDependency(leftAttributes,rightAttributes);
         this.associatedGroup=associatedGroup;
     }
 
-    public boolean hasDependencySpecificAttributeOnLeftSide(String specificAttribute){
+    public boolean hasDependencySpecificAttributeOnLeftSide(Attribute specificAttribute){
         return getLeftAttributes().contains(specificAttribute);
     }
 

@@ -1,6 +1,7 @@
 package PerformanceImprovedImplementation.Grouping;
 
-import PerformanceImprovedImplementation.PerformanceAdaptedStructures.ListSet;
+import BaseTemplateElements.Attribute;
+import PerformanceImprovedImplementation.Structures.ListSet;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,7 +38,7 @@ public class DependenciesGrouping extends ListSet<GroupDependency> {
         assignAllDependenciesToThisGroup(c);
         return super.addAll(c);
     }
-    public DependenciesGrouping removeDependenciesNotHavingSpecificAttribute(String specificAttribute){
+    public DependenciesGrouping removeDependenciesNotHavingSpecificAttribute(Attribute specificAttribute){
         DependenciesGrouping removedDependencies=new DependenciesGrouping();
         Iterator<GroupDependency> allDependenciesIterator=iterator();
         while (allDependenciesIterator.hasNext()) {
@@ -53,7 +54,7 @@ public class DependenciesGrouping extends ListSet<GroupDependency> {
 
     public void transformIntoReadyGroupingOfFirstDependency(Set<DependenciesGrouping> containerForNonMatchingGroups){
         GroupDependency firstDependency=get(0);
-        for (String leftAttribute : firstDependency.getLeftAttributes()) {
+        for (Attribute leftAttribute : firstDependency.getLeftAttributes()) {
             DependenciesGrouping nonMatchingGroup=this.removeDependenciesNotHavingSpecificAttribute(leftAttribute);
             if (!nonMatchingGroup.isEmpty())
                 containerForNonMatchingGroups.add(nonMatchingGroup);

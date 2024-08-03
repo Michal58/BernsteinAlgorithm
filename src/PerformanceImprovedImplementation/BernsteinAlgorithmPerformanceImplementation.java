@@ -1,15 +1,18 @@
 package PerformanceImprovedImplementation;
 
 import BaseTemplateElements.*;
-import CorrectnessBaseImplementation.BernsteinAlgorithmImplementation;
+import CorrectnessBaseImplementation.Structures.AttributesHashSet;
+import CorrectnessBaseImplementation.Structures.BijectionDependenciesAndGroups;
+import CorrectnessBaseImplementation.Structures.GroupOfFunctionalDependencies;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.DependenciesLeftSidesGrouper;
 import PerformanceImprovedImplementation.Grouping.GroupDependency;
 import PerformanceImprovedImplementation.Grouping.MapImitatorGroupsHolder;
 import PerformanceImprovedImplementation.Merging.GroupsAndBijectionsMerger;
 import PerformanceImprovedImplementation.Merging.SetOfFunctionalDependencyImitatorBijectionsHolder;
-import PerformanceImprovedImplementation.PerformanceAdaptedStructures.ListSet;
-import PerformanceImprovedImplementation.PerformanceAdaptedStructures.OperationalHashBasedSetOfFunctionalDependencies;
+import PerformanceImprovedImplementation.Structures.FinalImprovedSchemaSet;
+import PerformanceImprovedImplementation.Structures.ListSet;
+import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,38 +28,41 @@ public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgori
     }
 
     @Override
-    public Set<FunctionalDependency> getSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies) {
-        return new OperationalHashBasedSetOfFunctionalDependencies(dependencies,true);
+    public AlgorithmState getFirstStateFromGivenDependencies(Collection<FunctionalDependency> dependencies) {
+        return new DependenciesOperationalSet(dependencies,true);
     }
 
     @Override
-    public Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies() {
+    public AlgorithmState eliminateExtraneousAttributesFromLeftSidesOfDependencies() {
         Set<FunctionalDependency> reducedLeftSideDependencies=new ListSet<>();
-        OperationalHashBasedSetOfFunctionalDependencies baseDependencies=(OperationalHashBasedSetOfFunctionalDependencies) getFunctionalDependencies();
+        DependenciesOperationalSet baseDependencies=(DependenciesOperationalSet) getStateOfAlgorithm();
 
         for (FunctionalDependency dependency : baseDependencies) {
             FunctionalDependency minimalLeftSideDependency=baseDependencies.removeExtraneousAttributesFromLeftSideOfDependency(dependency);
             reducedLeftSideDependencies.add(minimalLeftSideDependency);
         }
-        return reducedLeftSideDependencies;
+        return (AlgorithmState) reducedLeftSideDependencies;
     }
 
     @Override
-    public Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes) {
-        OperationalHashBasedSetOfFunctionalDependencies minimalCover=new OperationalHashBasedSetOfFunctionalDependencies(functionalDependenciesWithReducedLeftAttributes);
+    public AlgorithmState findMinimalCoverOfFunctionalDependencies() {
+        Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes=(ListSet<FunctionalDependency>) getStateOfAlgorithm();
+        DependenciesOperationalSet minimalCover=new DependenciesOperationalSet(functionalDependenciesWithReducedLeftAttributes);
         minimalCover.transformItselfIntoMinimalCover();
         return minimalCover;
     }
 
     @Override
-    public Map<Attributes, GroupOfFunctionalDependencies> groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover) {
+    public AlgorithmState groupDependenciesByLeftSides() {
+        Set<FunctionalDependency> minimalCover=(DependenciesOperationalSet) getStateOfAlgorithm();
         DependenciesLeftSidesGrouper groupingPerformer=new DependenciesLeftSidesGrouper(minimalCover);
-        return groupingPerformer.group();
+        return (AlgorithmState) groupingPerformer.group();
     }
 
     @Override
-    public BijectionDependenciesAndGroups groupBijectionDependenciesAndMergeTheirGroups(Map<Attributes, GroupOfFunctionalDependencies> initialGroups) {
-        Set<DependenciesGrouping> actualInitialGroups=((MapImitatorGroupsHolder)initialGroups).getGroups();
+    public AlgorithmState groupBijectionDependenciesAndMergeTheirGroups() {
+        MapImitatorGroupsHolder initialGroups=(MapImitatorGroupsHolder) getStateOfAlgorithm();
+        Set<DependenciesGrouping> actualInitialGroups= initialGroups.getGroups();
         GroupsAndBijectionsMerger merger=new GroupsAndBijectionsMerger(actualInitialGroups);
         return merger.mergeGroupsAndBijectionDependencies();
     }
@@ -68,7 +74,8 @@ public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgori
         }
     }
     @Override
-    public Map<Attributes, GroupOfFunctionalDependencies> removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies) {
+    public AlgorithmState removeTransitiveDependencies() {
+        BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies=(BijectionDependenciesAndGroups) getStateOfAlgorithm();
         Set<GroupDependency> bijections=((SetOfFunctionalDependencyImitatorBijectionsHolder)potentiallyPossibleTransitiveDependencies.bijectionsDependencies()).getHeldDependencies();
         Set<DependenciesGrouping> groups=((MapImitatorGroupsHolder)potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies()).getGroups();
 
@@ -77,8 +84,8 @@ public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgori
                         .flatMap(Collection::stream)
                         .collect(Collectors.toCollection(ListSet::new));
 
-        OperationalHashBasedSetOfFunctionalDependencies allDependenciesWithBijections=
-                new OperationalHashBasedSetOfFunctionalDependencies(allGroupDependencies);
+        DependenciesOperationalSet allDependenciesWithBijections=
+                new DependenciesOperationalSet(allGroupDependencies);
         allDependenciesWithBijections.addAll(bijections);
 
         allDependenciesWithBijections.minimizeCoverOfGivenDependencies(allGroupDependencies);
@@ -89,10 +96,11 @@ public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgori
     }
 
     @Override
-    public Set<RelationalSchema> createRelationalSchemasFromGroupsOfFunctionalDependencies(Map<Attributes, GroupOfFunctionalDependencies> nonTransitiveDependencies) {
+    public AlgorithmState createRelationalSchemasFromGroupsOfFunctionalDependencies() {
+        Map<Attributes, GroupOfFunctionalDependencies> nonTransitiveDependencies=(Map<Attributes, GroupOfFunctionalDependencies>) getStateOfAlgorithm();
         Set<DependenciesGrouping> groups=((MapImitatorGroupsHolder)nonTransitiveDependencies).getGroups();
         Function<DependenciesGrouping,RelationalSchema> schemaCreator= group ->
-                new RelationalSchema(new Attributes(
+                new RelationalSchema(new AttributesHashSet(
                         group.stream()
                                 .flatMap(dependency->
                                         Stream.concat(dependency.getLeftAttributes().stream()
@@ -104,8 +112,8 @@ public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgori
         Set<RelationalSchema> schemas=
                 groups.stream()
                         .map(schemaCreator)
-                        .collect(Collectors.toCollection(ListSet::new));
+                        .collect(Collectors.toCollection(FinalImprovedSchemaSet::new));
 
-        return schemas;
+        return (AlgorithmState) schemas;
     }
 }

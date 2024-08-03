@@ -1,21 +1,24 @@
 package CorrectnessBaseImplementation;
 
+import BaseTemplateElements.AlgorithmState;
+import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
+import CorrectnessBaseImplementation.Structures.AttributesHashSet;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OperationalSetOfFunctionalDependencies extends HashSet<FunctionalDependency>{
-    public OperationalSetOfFunctionalDependencies(){
+public class DependenciesOperationalSet extends HashSet<FunctionalDependency> implements AlgorithmState {
+    public DependenciesOperationalSet(){
         super();
     }
-    public OperationalSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies){
+    public DependenciesOperationalSet(Collection<FunctionalDependency> dependencies){
         super(dependencies);
     }
 
-    public int addNewAttributesToBuildingClosureAndReturnTheirCount(Set<String> buildingClosure){
+    public int addNewAttributesToBuildingClosureAndReturnTheirCount(Set<Attribute> buildingClosure){
         int startingCountOfAttributes=buildingClosure.size();
         for (FunctionalDependency currentDependency:this){
             if (buildingClosure.containsAll(currentDependency.getLeftAttributes()))
@@ -26,12 +29,12 @@ public class OperationalSetOfFunctionalDependencies extends HashSet<FunctionalDe
     }
 
     public Attributes constructTransitiveClosure(Attributes baseAttributes){
-        Set<String> buildingClosure= new HashSet<>(baseAttributes);
+        Set<Attribute> buildingClosure= new HashSet<>(baseAttributes);
         int addedAttributes;
         do
             addedAttributes=addNewAttributesToBuildingClosureAndReturnTheirCount(buildingClosure);
         while (addedAttributes!=0);
-        return new Attributes(buildingClosure);
+        return new AttributesHashSet(buildingClosure);
     }
 
     public boolean checkIfThereIsTransitiveDependency(FunctionalDependency possibleDependency){

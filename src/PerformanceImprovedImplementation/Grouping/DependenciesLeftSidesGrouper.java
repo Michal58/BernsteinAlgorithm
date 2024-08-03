@@ -3,8 +3,8 @@ package PerformanceImprovedImplementation.Grouping;
 
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
-import BaseTemplateElements.GroupOfFunctionalDependencies;
-import PerformanceImprovedImplementation.PerformanceAdaptedStructures.ListSet;
+import CorrectnessBaseImplementation.Structures.GroupOfFunctionalDependencies;
+import PerformanceImprovedImplementation.Structures.ListSet;
 
 import java.util.Map;
 import java.util.Set;

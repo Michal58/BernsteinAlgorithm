@@ -1,6 +1,7 @@
 package Service.InputConversion.Testing;
 
 import BaseTemplateElements.FunctionalDependency;
+import CorrectnessBaseImplementation.Structures.SimpleFunctionalDependency;
 import Service.InputConversion.StringFormOfFunctionalDependency;
 import org.junit.jupiter.api.Test;
 
@@ -69,10 +70,10 @@ public class TestOfStringFormOfFunctionalDependency {
 
         assertEquals(extractedSets,transformedValidAttributes);
 
-        List<FunctionalDependency> validFunctionalDependencies=
+        List<? extends FunctionalDependency> validFunctionalDependencies=
                 transformedValidAttributes.stream().
                         map(pairOfExtractedSets ->
-                                new FunctionalDependency(pairOfExtractedSets.leftSide(),pairOfExtractedSets.rightSide())).
+                                new SimpleFunctionalDependency(pairOfExtractedSets.leftSide(),pairOfExtractedSets.rightSide())).
                         toList();
 
         List<FunctionalDependency> convertedStringsIntoDependencies=

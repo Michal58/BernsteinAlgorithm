@@ -1,50 +1,51 @@
 package BaseTemplateElements;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class BernsteinAlgorithmTemplate {
-    private Set<FunctionalDependency> functionalDependencies;
+    private AlgorithmState stateOfAlgorithm;
     public BernsteinAlgorithmTemplate(Collection<FunctionalDependency> functionalDependencies){
-        this.functionalDependencies= getSetOfFunctionalDependencies(functionalDependencies);
+        this.stateOfAlgorithm = getFirstStateFromGivenDependencies(functionalDependencies);
     }
     public Set<RelationalSchema> generateNormalizedDatabaseSchema(){
-        // main purpose of structures e.g. RelationalSchema, Attributes - is to simplification
-        // and explanation of algorithm
-
         // step 1
-        Set<FunctionalDependency> dependenciesWithReducedLeftAttributes=
-                eliminateExtraneousAttributesFromLeftSidesOfDependencies();
+        stateOfAlgorithm = eliminateExtraneousAttributesFromLeftSidesOfDependencies();
+
         // step 2
-        Set<FunctionalDependency> minimalCover=
-                findMinimalCoverOfFunctionalDependencies(dependenciesWithReducedLeftAttributes);
+        stateOfAlgorithm = findMinimalCoverOfFunctionalDependencies();
+
         // step 3
-        Map<Attributes, GroupOfFunctionalDependencies> groupedDependencies=
-                groupDependenciesByLeftSides(minimalCover);
+        stateOfAlgorithm = groupDependenciesByLeftSides();
+
         // step 4
-        BijectionDependenciesAndGroups mergedGroups=
-                groupBijectionDependenciesAndMergeTheirGroups(groupedDependencies);
+        stateOfAlgorithm = groupBijectionDependenciesAndMergeTheirGroups();
 
         // step 5
-        Map<Attributes,GroupOfFunctionalDependencies> nonTransitiveDependencies=
-                removeTransitiveDependencies(mergedGroups);
+        stateOfAlgorithm = removeTransitiveDependencies();
 
         // step 6
-        Set<RelationalSchema> finalDatabaseSchema=
-                createRelationalSchemasFromGroupsOfFunctionalDependencies(nonTransitiveDependencies);
+        stateOfAlgorithm = createRelationalSchemasFromGroupsOfFunctionalDependencies();
 
-        return finalDatabaseSchema;
+        return extractSchemasFromFinalState();
     }
-    public Set<FunctionalDependency> getFunctionalDependencies() {
-        return functionalDependencies;
+
+    public AlgorithmState getStateOfAlgorithm() {
+        return stateOfAlgorithm;
     }
-    public abstract Set<FunctionalDependency> getSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies);
-    public abstract Set<FunctionalDependency> eliminateExtraneousAttributesFromLeftSidesOfDependencies();
-    public abstract Set<FunctionalDependency> findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes);
-    public abstract Map<Attributes, GroupOfFunctionalDependencies> groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover);
-    public abstract BijectionDependenciesAndGroups groupBijectionDependenciesAndMergeTheirGroups(Map<Attributes, GroupOfFunctionalDependencies> initialGroups);
-    public abstract Map<Attributes,GroupOfFunctionalDependencies> removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies);
-    public abstract Set<RelationalSchema> createRelationalSchemasFromGroupsOfFunctionalDependencies(Map<Attributes,GroupOfFunctionalDependencies> nonTransitiveDependencies);
+
+    public void setStateOfAlgorithm(AlgorithmState stateOfAlgorithm) {
+        this.stateOfAlgorithm = stateOfAlgorithm;
+    }
+
+    public abstract AlgorithmState getFirstStateFromGivenDependencies(Collection<FunctionalDependency> dependencies);
+    public abstract AlgorithmState eliminateExtraneousAttributesFromLeftSidesOfDependencies();
+    public abstract AlgorithmState findMinimalCoverOfFunctionalDependencies();
+    public abstract AlgorithmState groupDependenciesByLeftSides();
+    public abstract AlgorithmState groupBijectionDependenciesAndMergeTheirGroups();
+    public abstract AlgorithmState removeTransitiveDependencies();
+    public abstract AlgorithmState createRelationalSchemasFromGroupsOfFunctionalDependencies();
+    public Set<RelationalSchema> extractSchemasFromFinalState(){
+        return (Set<RelationalSchema>) stateOfAlgorithm;
+    }
 }

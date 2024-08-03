@@ -1,6 +1,7 @@
 package Service.InputConversion;
 
 import BaseTemplateElements.FunctionalDependency;
+import CorrectnessBaseImplementation.Structures.SimpleFunctionalDependency;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -51,6 +52,6 @@ public class StringFormOfFunctionalDependency {
 
     public FunctionalDependency convertToFunctionalDependency(){
         PairOfExtractedSets extractedSets=extractSets();
-        return new FunctionalDependency(extractedSets.leftSide,extractedSets.rightSide);
+        return new SimpleFunctionalDependency(extractedSets.leftSide,extractedSets.rightSide);
     }
 }

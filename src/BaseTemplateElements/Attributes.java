@@ -1,10 +1,8 @@
 package BaseTemplateElements;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
-public class Attributes extends HashSet<String> {
-    public Attributes(Collection<String> setOfAttributes){
-        super(setOfAttributes);
-    }
+public interface Attributes extends Set<Attribute> {
+    Attributes createEmptyInstance();
+    Attributes copy();
 }

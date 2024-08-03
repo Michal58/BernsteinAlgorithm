@@ -1,24 +1,27 @@
-package PerformanceImprovedImplementation.PerformanceAdaptedStructures;
+package PerformanceImprovedImplementation.Structures;
 
 
+import BaseTemplateElements.AlgorithmState;
+import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
+import CorrectnessBaseImplementation.Structures.AttributesHashSet;
 
 import java.util.*;
 
-public class OperationalHashBasedSetOfFunctionalDependencies extends ListSet<FunctionalDependency> {
+public class DependenciesOperationalSet extends ListSet<FunctionalDependency> implements AlgorithmState {
     private final boolean shouldMemorizeDerivableDependencies;
     private class AssociatedDependencies extends LinkedList<DependencyOwningSpecificAttribute>{
     }
     // 'String' below represents specific attribute
-    private Map<String, AssociatedDependencies> dictionaryOfDependenciesOwningSpecificAttribute;
+    private Map<Attribute, AssociatedDependencies> dictionaryOfDependenciesOwningSpecificAttribute;
     private ListSet<FunctionalDependency> derivableDependencies;
 
-    private void createAssociatedDependenciesWithAttribute(String associatedAttribute){
+    private void createAssociatedDependenciesWithAttribute(Attribute associatedAttribute){
         dictionaryOfDependenciesOwningSpecificAttribute.put(associatedAttribute,new AssociatedDependencies());
     }
 
-    private void addDependencyToItsAssociatedGroup(String specificAttribute,DependencyOwningSpecificAttribute dependencyOperationalForm){
+    private void addDependencyToItsAssociatedGroup(Attribute specificAttribute,DependencyOwningSpecificAttribute dependencyOperationalForm){
         AssociatedDependencies associatedGroup=dictionaryOfDependenciesOwningSpecificAttribute.get(specificAttribute);
         associatedGroup.add(dependencyOperationalForm);
     }
@@ -28,7 +31,7 @@ public class OperationalHashBasedSetOfFunctionalDependencies extends ListSet<Fun
 
         for (FunctionalDependency dependency : this) {
             DependencyOwningSpecificAttribute dependencyOperationalForm=new DependencyOwningSpecificAttribute(dependency);
-            for (String leftAttribute : dependency.getLeftAttributes()) {
+            for (Attribute leftAttribute : dependency.getLeftAttributes()) {
                 if (!dictionaryOfDependenciesOwningSpecificAttribute.containsKey(leftAttribute))
                     createAssociatedDependenciesWithAttribute(leftAttribute);
                 addDependencyToItsAssociatedGroup(leftAttribute,dependencyOperationalForm);
@@ -44,7 +47,7 @@ public class OperationalHashBasedSetOfFunctionalDependencies extends ListSet<Fun
         currentClosure.addAll(derivableDependency.getRightAttributes());
     }
 
-    private void findAndUpdateClosureElementsWithNewDerivableDependencies(String currentAttribute, Attributes newClosureElements, Attributes currentClosure){
+    private void findAndUpdateClosureElementsWithNewDerivableDependencies(Attribute currentAttribute, Attributes newClosureElements, Attributes currentClosure){
         if (!dictionaryOfDependenciesOwningSpecificAttribute.containsKey(currentAttribute))
             return;
         for (DependencyOwningSpecificAttribute dependencyOwningCurrentAttribute : dictionaryOfDependenciesOwningSpecificAttribute.get(currentAttribute)) {
@@ -65,28 +68,28 @@ public class OperationalHashBasedSetOfFunctionalDependencies extends ListSet<Fun
         NewClosureAttributes newClosureElements=new NewClosureAttributes(closure);
 
         while (!newClosureElements.isEmpty()){
-            String currentAttribute= newClosureElements.getAndThenRemoveAnyAttribute();
+            Attribute currentAttribute= newClosureElements.getAndThenRemoveAnyAttribute();
             findAndUpdateClosureElementsWithNewDerivableDependencies(currentAttribute,newClosureElements,closure);
         }
     }
 
-    public OperationalHashBasedSetOfFunctionalDependencies(){
+    public DependenciesOperationalSet(){
         super();
         shouldMemorizeDerivableDependencies=false;
     }
 
-    public OperationalHashBasedSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies){
+    public DependenciesOperationalSet(Collection<FunctionalDependency> dependencies){
         super(dependencies);
         shouldMemorizeDerivableDependencies = false;
     }
-    public OperationalHashBasedSetOfFunctionalDependencies(Collection<FunctionalDependency> dependencies, boolean shouldMemorizeDerivableDependencies){
+    public DependenciesOperationalSet(Collection<FunctionalDependency> dependencies, boolean shouldMemorizeDerivableDependencies){
         super(dependencies);
         this.shouldMemorizeDerivableDependencies = shouldMemorizeDerivableDependencies;
     }
 
     public Attributes getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(Attributes baseOfClosureBuilding){
         deriveDictionaryOfDependenciesOwningSpecificAttribute();
-        Attributes closure=new Attributes(baseOfClosureBuilding);
+        Attributes closure=new AttributesHashSet(baseOfClosureBuilding);
         buildGivenClosure(closure);
         return closure;
     }
@@ -98,7 +101,7 @@ public class OperationalHashBasedSetOfFunctionalDependencies extends ListSet<Fun
 
     public FunctionalDependency removeExtraneousAttributesFromLeftSideOfDependency(FunctionalDependency initialDependency){
         FunctionalDependency copyOfDependency=initialDependency.getCopy();
-        for (String leftAttribute : initialDependency.getLeftAttributes()) {
+        for (Attribute leftAttribute : initialDependency.getLeftAttributes()) {
             copyOfDependency.getLeftAttributes().remove(leftAttribute);
             boolean wasLeftAttributeExtraneous=checkIfThereIsTransitiveDependency(copyOfDependency);
             if (!wasLeftAttributeExtraneous)
@@ -112,15 +115,15 @@ public class OperationalHashBasedSetOfFunctionalDependencies extends ListSet<Fun
         private RemoverOfRightAttributes(FunctionalDependency currentDependencyForRightSideReducing){
             this.currentDependencyForRightSideReducing=currentDependencyForRightSideReducing;
         }
-        private void setRightSideOfDependencyToSingleAttribute(FunctionalDependency dependency,String attributeToSet){
+        private void setRightSideOfDependencyToSingleAttribute(FunctionalDependency dependency,Attribute attributeToSet){
             dependency.getRightAttributes().clear();
             dependency.getRightAttributes().add(attributeToSet);
         }
         private boolean executeRemovingAndAnswerIfDependencyStillExist(){
             FunctionalDependency dependencyToBeKept=currentDependencyForRightSideReducing.getCopy();
-            List<String> attributesToCheckIfCanBeRemoved=new LinkedList<>(currentDependencyForRightSideReducing.getRightAttributes());
+            List<Attribute> attributesToCheckIfCanBeRemoved=new LinkedList<>(currentDependencyForRightSideReducing.getRightAttributes());
 
-            for (String attributeToRemove : attributesToCheckIfCanBeRemoved) {
+            for (Attribute attributeToRemove : attributesToCheckIfCanBeRemoved) {
                 currentDependencyForRightSideReducing.getRightAttributes().remove(attributeToRemove);
                 setRightSideOfDependencyToSingleAttribute(dependencyToBeKept,attributeToRemove);
                 boolean isDependencyKept=checkIfThereIsTransitiveDependency(dependencyToBeKept);

@@ -1,29 +1,41 @@
 package BaseTemplateElements;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
-public class FunctionalDependency {
-    private final Attributes leftAttributes;
-    private final Attributes rightAttributes;
+public abstract class FunctionalDependency {
+    private Attributes leftAttributes;
+    private Attributes rightAttributes;
 
-    public enum NullContent {
-        CONFIRMATION
-    }
-    public FunctionalDependency(NullContent confirmation){
+    public FunctionalDependency(){
         leftAttributes=null;
         rightAttributes=null;
     }
-    public FunctionalDependency(Collection<String> leftAttributes,Collection<String> rightAttributes){
-        this.leftAttributes=new Attributes(produceSetOfAttributes(leftAttributes));
-        this.rightAttributes=new Attributes(produceSetOfAttributes(rightAttributes));
+
+    public FunctionalDependency(FunctionalDependency dependencyToReassign,Object ignoredAny){
+        assignAttributesOfOtherDependency(dependencyToReassign);
     }
 
-    public Set<String> produceSetOfAttributes(Collection<String> attributes){
-        return new HashSet<>(attributes);
+    public FunctionalDependency(FunctionalDependency dependencyToCopy){
+        FunctionalDependency copyOfDependency=dependencyToCopy.getCopy();
+        assignAttributesOfOtherDependency(copyOfDependency);
     }
+
+    public FunctionalDependency(Collection<String> leftAttributes,Collection<String> rightAttributes){
+        this.leftAttributes= produceSetOfAttributesFromStrings(leftAttributes);
+        this.rightAttributes= produceSetOfAttributesFromStrings(rightAttributes);
+    }
+
+    public FunctionalDependency(Attributes leftAttributes,Attributes rightAttributes){
+        this.leftAttributes=leftAttributes.copy();
+        this.rightAttributes=rightAttributes.copy();
+    }
+    public void assignAttributesOfOtherDependency(FunctionalDependency otherDependency){
+        this.leftAttributes= otherDependency.getLeftAttributes();
+        this.rightAttributes= otherDependency.getRightAttributes();
+    }
+
+    public abstract Attributes produceSetOfAttributesFromStrings(Collection<String> attributes);
 
     public Attributes getLeftAttributes() {
         return leftAttributes;
@@ -50,7 +62,5 @@ public class FunctionalDependency {
         return String.format("%s->%s",leftAttributes,rightAttributes);
     }
 
-    public FunctionalDependency getCopy(){
-        return new FunctionalDependency(leftAttributes,rightAttributes);
-    }
+    public abstract FunctionalDependency getCopy();
 }

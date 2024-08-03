@@ -1,4 +1,4 @@
-package PerformanceImprovedImplementation.PerformanceAdaptedStructures;
+package PerformanceImprovedImplementation.Structures;
 
 import BaseTemplateElements.FunctionalDependency;
 

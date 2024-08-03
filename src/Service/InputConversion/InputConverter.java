@@ -12,6 +12,7 @@ public class InputConverter {
         this.nameOfFileToConvert=nameOfFileToConvert;
     }
     private List<FunctionalDependency> readDependenciesFromFileWithReader(BufferedReader fileReader){
+
         return fileReader.lines()
                 .filter(line-> !line.isEmpty())
                 .map(StringFormOfFunctionalDependency::new)

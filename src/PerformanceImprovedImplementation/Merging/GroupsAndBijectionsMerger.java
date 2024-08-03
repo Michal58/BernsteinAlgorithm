@@ -1,13 +1,13 @@
 package PerformanceImprovedImplementation.Merging;
 
 import BaseTemplateElements.Attributes;
-import BaseTemplateElements.BijectionDependenciesAndGroups;
+import CorrectnessBaseImplementation.Structures.BijectionDependenciesAndGroups;
 import BaseTemplateElements.FunctionalDependency;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.GroupDependency;
 import PerformanceImprovedImplementation.Grouping.MapImitatorGroupsHolder;
-import PerformanceImprovedImplementation.PerformanceAdaptedStructures.ListSet;
-import PerformanceImprovedImplementation.PerformanceAdaptedStructures.OperationalHashBasedSetOfFunctionalDependencies;
+import PerformanceImprovedImplementation.Structures.ListSet;
+import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +19,7 @@ public class GroupsAndBijectionsMerger {
     private Set<DependenciesGrouping> groups;
     private int[][] derivationMatrix;
     private DependenciesGrouping[] orderedGroups;
-    private Set<?> getDerivableDependencies(FunctionalDependency dependencyToCheck,OperationalHashBasedSetOfFunctionalDependencies allDependencies){
+    private Set<?> getDerivableDependencies(FunctionalDependency dependencyToCheck, DependenciesOperationalSet allDependencies){
         allDependencies.getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(dependencyToCheck.getLeftAttributes());
         return allDependencies.getDerivableDependencies();
     }
@@ -49,7 +49,7 @@ public class GroupsAndBijectionsMerger {
             markDerivationExistence(derivingIndex,derivedDependency.getAssociatedGroup().getIndexInDerivationMatrix());
     }
 
-    private void fillDerivationMatrix(Set<DependenciesGrouping> placedGroups,OperationalHashBasedSetOfFunctionalDependencies allDependencies){
+    private void fillDerivationMatrix(Set<DependenciesGrouping> placedGroups, DependenciesOperationalSet allDependencies){
         for (DependenciesGrouping group : placedGroups) {
             GroupDependency anyDependencyFromGroup = group.get(0);
             Set<GroupDependency> derivableDependencies = (Set<GroupDependency>) getDerivableDependencies(anyDependencyFromGroup, allDependencies);
@@ -114,8 +114,8 @@ public class GroupsAndBijectionsMerger {
     }
 
     public BijectionDependenciesAndGroups mergeGroupsAndBijectionDependencies(){
-        OperationalHashBasedSetOfFunctionalDependencies setOfAllDependencies=
-                new OperationalHashBasedSetOfFunctionalDependencies(
+        DependenciesOperationalSet setOfAllDependencies=
+                new DependenciesOperationalSet(
                         groups.stream()
                                 .flatMap(Collection::stream)
                                 .collect(Collectors.toList()),true);
