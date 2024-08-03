@@ -18,4 +18,9 @@ public record RelationalSchema(Attributes allAttributes, Attributes key) {
                 && allAttributes.equals(((RelationalSchema) obj).allAttributes)
                 && key.equals(((RelationalSchema) obj).key);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s<-%s",allAttributes,key);
+    }
 }

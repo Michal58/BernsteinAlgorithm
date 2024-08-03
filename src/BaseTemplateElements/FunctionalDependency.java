@@ -5,9 +5,17 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public final class FunctionalDependency {
+public class FunctionalDependency {
     private final Attributes leftAttributes;
     private final Attributes rightAttributes;
+
+    public enum NullContent {
+        CONFIRMATION
+    }
+    public FunctionalDependency(NullContent confirmation){
+        leftAttributes=null;
+        rightAttributes=null;
+    }
     public FunctionalDependency(Collection<String> leftAttributes,Collection<String> rightAttributes){
         this.leftAttributes=new Attributes(produceSetOfAttributes(leftAttributes));
         this.rightAttributes=new Attributes(produceSetOfAttributes(rightAttributes));
