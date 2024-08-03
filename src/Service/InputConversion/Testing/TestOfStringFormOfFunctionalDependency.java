@@ -1,7 +1,7 @@
-package InputConversion.Testing;
+package Service.InputConversion.Testing;
 
 import BaseTemplateElements.FunctionalDependency;
-import InputConversion.StringFormOfFunctionalDependency;
+import Service.InputConversion.StringFormOfFunctionalDependency;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
