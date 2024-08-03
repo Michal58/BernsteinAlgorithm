@@ -32,3 +32,4 @@ BernsteinAlgorithm.iml
 .idea/
 localAdditioanlDir/
 src/CorrectnessBaseImplementation/Testing/
+src/PerformanceImprovedImplementation/Testing/
