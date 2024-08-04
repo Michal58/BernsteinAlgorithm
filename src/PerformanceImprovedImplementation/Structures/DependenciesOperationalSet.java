@@ -9,7 +9,7 @@ import CorrectnessBaseImplementation.Structures.AttributesHashSet;
 
 import java.util.*;
 
-public class DependenciesOperationalSet extends ListSet<FunctionalDependency> implements AlgorithmState {
+public class DependenciesOperationalSet extends ListSet<FunctionalDependency> implements CommonElements.DependenciesOperationalSet {
     private final boolean shouldMemorizeDerivableDependencies;
     private class AssociatedDependencies extends LinkedList<DependencyOwningSpecificAttribute>{
     }
@@ -94,6 +94,12 @@ public class DependenciesOperationalSet extends ListSet<FunctionalDependency> im
         return closure;
     }
 
+    @Override
+    public Attributes constructTransitiveClosure(Attributes baseAttributes) {
+        return getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(baseAttributes);
+    }
+
+    @Override
     public boolean checkIfThereIsTransitiveDependency(FunctionalDependency possibleDependency){
         Attributes closureAttributes=getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(possibleDependency.getLeftAttributes());
         return closureAttributes.containsAll(possibleDependency.getRightAttributes());
