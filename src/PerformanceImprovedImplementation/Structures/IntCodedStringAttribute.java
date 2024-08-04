@@ -2,15 +2,26 @@ package PerformanceImprovedImplementation.Structures;
 
 import BaseTemplateElements.Attribute;
 
+import java.util.HashMap;
+
 public class IntCodedStringAttribute implements Attribute {
     public static class ProducerOfIntCodedAttributes {
-        private int currentCodingState;
+        private static final int IMPOSSIBLE_ENCODING=-2;
+        private HashMap<String,Integer> encodingDictionary;
+        private int currentCode;
         public ProducerOfIntCodedAttributes(){
-            currentCodingState=-1;
+            currentCode =-1;
+            encodingDictionary=new HashMap<>();
         }
         public IntCodedStringAttribute getCodedAttribute(String actualAttribute){
-            currentCodingState++;
-            return new IntCodedStringAttribute(actualAttribute,currentCodingState);
+            int possibleAttributeCode=encodingDictionary.getOrDefault(actualAttribute,IMPOSSIBLE_ENCODING);
+            if (possibleAttributeCode!=IMPOSSIBLE_ENCODING)
+                return new IntCodedStringAttribute(actualAttribute, possibleAttributeCode);
+            else {
+                currentCode++;
+                encodingDictionary.put(actualAttribute,currentCode);
+                return new IntCodedStringAttribute(actualAttribute, currentCode);
+            }
         }
     }
     private final String actualAttribute;
@@ -28,7 +39,7 @@ public class IntCodedStringAttribute implements Attribute {
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(code);
+        return actualAttribute.hashCode();
     }
 
     @Override

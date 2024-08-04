@@ -1,11 +1,16 @@
 package Service.InputConversion;
 
+import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
+import CorrectnessBaseImplementation.Structures.AttributesHashSet;
 import CorrectnessBaseImplementation.Structures.SimpleFunctionalDependency;
+import PerformanceImprovedImplementation.Structures.IntCodedStringAttribute;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class StringFormOfFunctionalDependency {
     public static final String SET_FORM_OPENING_FORMAT="\\s*\\{\\s*";
@@ -53,5 +58,20 @@ public class StringFormOfFunctionalDependency {
     public FunctionalDependency convertToFunctionalDependency(){
         PairOfExtractedSets extractedSets=extractSets();
         return new SimpleFunctionalDependency(extractedSets.leftSide,extractedSets.rightSide);
+    }
+
+    private Attributes convertStringsToIntCodedAttribute(Collection<String> strings,IntCodedStringAttribute.ProducerOfIntCodedAttributes attributesProducer){
+        return strings.stream()
+                .map(attributesProducer::getCodedAttribute)
+                .collect(Collectors.toCollection(AttributesHashSet::new));
+    }
+
+    public FunctionalDependency convertToAsymptoticallyImprovedFunctionalDependency(IntCodedStringAttribute.ProducerOfIntCodedAttributes attributesProducer){
+        PairOfExtractedSets extractedSets=extractSets();
+
+        Attributes leftSideAsAttributes=convertStringsToIntCodedAttribute(extractedSets.leftSide,attributesProducer);
+        Attributes rightSideAsAttributes=convertStringsToIntCodedAttribute(extractedSets.rightSide,attributesProducer);
+
+        return new SimpleFunctionalDependency(leftSideAsAttributes,rightSideAsAttributes);
     }
 }
