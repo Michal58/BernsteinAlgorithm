@@ -1,6 +1,5 @@
 package CorrectnessBaseImplementation.StepPerformers;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
 import CorrectnessBaseImplementation.DependenciesOperationalSet;
@@ -43,7 +42,7 @@ public class BijectionsAndGroupsMerger {
         firstGroup.addAll(secondGroup);
     }
 
-    public AlgorithmState groupBijectionDependenciesAndMergeTheirGroups(Map<Attributes, GroupOfFunctionalDependencies> initialGroups) {
+    public BijectionDependenciesAndGroups groupBijectionDependenciesAndMergeTheirGroups(Map<Attributes, GroupOfFunctionalDependencies> initialGroups) {
         //at this stage all dependencies at their right side have set of only one attribute
         Set<FunctionalDependency> bijectionDependencies=new HashSet<>();
 

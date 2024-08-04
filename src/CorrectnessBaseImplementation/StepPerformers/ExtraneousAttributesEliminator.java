@@ -1,13 +1,10 @@
 package CorrectnessBaseImplementation.StepPerformers;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
 import CommonElements.DependenciesOperationalSet;
 import CommonElements.DependenciesSetAsState;
-
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class ExtraneousAttributesEliminator {
@@ -39,15 +36,15 @@ public class ExtraneousAttributesEliminator {
 
         return dependencyToLeftSideReduction;
     }
-    public AlgorithmState eliminateExtraneousAttributesFromLeftSidesOfDependencies(DependenciesOperationalSet baseDependencies){
+    public DependenciesSetAsState eliminateExtraneousAttributesFromLeftSidesOfDependencies(DependenciesOperationalSet baseDependencies){
         this.operationalBaseDependenciesBeforeEliminating = baseDependencies;
-        Set<FunctionalDependency> reducedLeftSideDependencies = emptySetForReducedLeftSideDependenciesProvider.get();
+        DependenciesSetAsState reducedLeftSideDependencies = emptySetForReducedLeftSideDependenciesProvider.get();
 
         for (FunctionalDependency dependency : baseDependencies) {
             FunctionalDependency reducedDependency=createDependencyWithEliminatedExtraneousAttributesOnLeftSide(dependency);
             reducedLeftSideDependencies.add(reducedDependency);
         }
 
-        return (AlgorithmState) reducedLeftSideDependencies;
+        return reducedLeftSideDependencies;
     }
 }

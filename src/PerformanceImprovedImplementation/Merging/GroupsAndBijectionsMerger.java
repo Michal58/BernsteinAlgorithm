@@ -5,7 +5,7 @@ import CommonElements.ListSet;
 import BaseTemplateElements.FunctionalDependency;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.GroupDependency;
-import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
+import PerformanceImprovedImplementation.OperationalSet.DependenciesOperationalSet;
 import PerformanceImprovedImplementation.Structures.MergedGroupsAndBijectionsAsListSets;
 
 import java.util.Arrays;

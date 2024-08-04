@@ -1,11 +1,11 @@
 package CorrectnessBaseImplementation.StepPerformers;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
 import CorrectnessBaseImplementation.DependenciesOperationalSet;
 import CorrectnessBaseImplementation.Structures.BijectionDependenciesAndGroups;
 import CorrectnessBaseImplementation.Structures.GroupOfFunctionalDependencies;
+import CorrectnessBaseImplementation.Structures.GroupingAsDictionary;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,7 +31,7 @@ public class TransitiveDependenciesRemover {
         }
         removeAllEmptyGroups(allGroups.values());
     }
-    public AlgorithmState removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies) {
+    public GroupingAsDictionary removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies) {
         Set<FunctionalDependency> bijectionDependencies=potentiallyPossibleTransitiveDependencies.bijectionsDependencies();
         DependenciesOperationalSet allDependencies=
                 potentiallyPossibleTransitiveDependencies
@@ -56,6 +56,6 @@ public class TransitiveDependenciesRemover {
         }
 
         assignBijectionDependenciesToTheirGroups(bijectionDependencies,potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies());
-        return (AlgorithmState) potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies();
+        return (GroupingAsDictionary) potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies();
     }
 }

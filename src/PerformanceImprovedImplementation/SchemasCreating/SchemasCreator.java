@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SchemasCreator {
-    public AlgorithmState createRelationalSchemasFromGroupsOfFunctionalDependencies(ListSet<DependenciesGrouping> nonTransitiveDependenciesGroups) {
+    public FinalImprovedSchemaSet createRelationalSchemasFromGroupsOfFunctionalDependencies(ListSet<DependenciesGrouping> nonTransitiveDependenciesGroups) {
         Function<DependenciesGrouping, RelationalSchema> schemaCreator= group ->
                 new RelationalSchema(new AttributesHashSet(
                         group.stream()
@@ -24,11 +24,11 @@ public class SchemasCreator {
                         ,group.getAnyDependency().getLeftAttributes());
 
 
-        Set<RelationalSchema> schemas=
+        FinalImprovedSchemaSet schemas=
                 nonTransitiveDependenciesGroups.stream()
                         .map(schemaCreator)
                         .collect(Collectors.toCollection(FinalImprovedSchemaSet::new));
 
-        return (AlgorithmState) schemas;
+        return schemas;
     }
 }

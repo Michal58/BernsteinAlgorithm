@@ -1,6 +1,5 @@
 package CorrectnessBaseImplementation.StepPerformers;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
@@ -41,7 +40,7 @@ public class MinimalCoverFinder {
         if (!doesDependencyStillAppear)
             minimalCover.add(doubleSideReducedDependency);
     }
-    public AlgorithmState findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes) {
+    public DependenciesOperationalSet findMinimalCoverOfFunctionalDependencies(Set<FunctionalDependency> functionalDependenciesWithReducedLeftAttributes) {
         Set<FunctionalDependency> doubleSideReducedDependencies=transformDependenciesWithSplittingRightSides(functionalDependenciesWithReducedLeftAttributes);
         minimalCover= operationalSetOfGivenDependenciesProvider.apply(doubleSideReducedDependencies);
 

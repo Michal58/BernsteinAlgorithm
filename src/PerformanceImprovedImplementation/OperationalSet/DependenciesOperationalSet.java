@@ -1,4 +1,4 @@
-package PerformanceImprovedImplementation.Structures;
+package PerformanceImprovedImplementation.OperationalSet;
 
 
 import BaseTemplateElements.Attribute;
@@ -11,31 +11,34 @@ import java.util.*;
 
 public class DependenciesOperationalSet extends LinkedList<FunctionalDependency> implements CommonElements.DependenciesOperationalSet, Set<FunctionalDependency>, BaseTemplateElements.AlgorithmState {
     private final boolean shouldMemorizeDerivableDependencies;
-    private class AssociatedDependencies extends LinkedList<DependencyOwningSpecificAttribute>{
+    private class AssociatedDependencies extends LinkedList<OperationalContainerAsDependencyOwningSpecificAttribute>{
     }
-    // 'String' below represents specific attribute
-    private Map<Attribute, AssociatedDependencies> dictionaryOfDependenciesOwningSpecificAttribute;
+    private Map<Attribute, AssociatedDependencies> dictionaryOfDependenciesOwningSpecificAttributes;
     private ListSet<FunctionalDependency> derivableDependencies;
 
-    private void createAssociatedDependenciesWithAttribute(Attribute associatedAttribute){
-        dictionaryOfDependenciesOwningSpecificAttribute.put(associatedAttribute,new AssociatedDependencies());
+    private void createNewAssociatedDependenciesGroupWithAttribute(Attribute associatedAttribute){
+        dictionaryOfDependenciesOwningSpecificAttributes.put(associatedAttribute,new AssociatedDependencies());
     }
 
-    private void addDependencyToItsAssociatedGroup(Attribute specificAttribute,DependencyOwningSpecificAttribute dependencyOperationalForm){
-        AssociatedDependencies associatedGroup=dictionaryOfDependenciesOwningSpecificAttribute.get(specificAttribute);
+    private void addDependencyToItsAssociatedGroup(Attribute specificAttribute, OperationalContainerAsDependencyOwningSpecificAttribute dependencyOperationalForm){
+        AssociatedDependencies associatedGroup= dictionaryOfDependenciesOwningSpecificAttributes.get(specificAttribute);
         associatedGroup.add(dependencyOperationalForm);
     }
 
-    private void deriveDictionaryOfDependenciesOwningSpecificAttribute(){
-        dictionaryOfDependenciesOwningSpecificAttribute=new HashMap<>();
+    private void updateDictionaryWithGivenOperationalFromDependency(OperationalContainerAsDependencyOwningSpecificAttribute dependencyOperationalForm){
+        for (Attribute leftAttribute : dependencyOperationalForm.getAssociatedDependency().getLeftAttributes()) {
+            if (!dictionaryOfDependenciesOwningSpecificAttributes.containsKey(leftAttribute))
+                createNewAssociatedDependenciesGroupWithAttribute(leftAttribute);
+            addDependencyToItsAssociatedGroup(leftAttribute,dependencyOperationalForm);
+        }
+    }
+
+    private void deriveDictionaryOfDependenciesOwningSpecificAttributes(){
+        dictionaryOfDependenciesOwningSpecificAttributes =new HashMap<>();
 
         for (FunctionalDependency dependency : this) {
-            DependencyOwningSpecificAttribute dependencyOperationalForm=new DependencyOwningSpecificAttribute(dependency);
-            for (Attribute leftAttribute : dependency.getLeftAttributes()) {
-                if (!dictionaryOfDependenciesOwningSpecificAttribute.containsKey(leftAttribute))
-                    createAssociatedDependenciesWithAttribute(leftAttribute);
-                addDependencyToItsAssociatedGroup(leftAttribute,dependencyOperationalForm);
-            }
+            OperationalContainerAsDependencyOwningSpecificAttribute dependencyOperationalForm=new OperationalContainerAsDependencyOwningSpecificAttribute(dependency);
+            updateDictionaryWithGivenOperationalFromDependency(dependencyOperationalForm);
         }
     }
 
@@ -48,10 +51,10 @@ public class DependenciesOperationalSet extends LinkedList<FunctionalDependency>
     }
 
     private void findAndUpdateClosureElementsWithNewDerivableDependencies(Attribute currentAttribute, Attributes newClosureElements, Attributes currentClosure){
-        if (!dictionaryOfDependenciesOwningSpecificAttribute.containsKey(currentAttribute))
+        if (!dictionaryOfDependenciesOwningSpecificAttributes.containsKey(currentAttribute))
             return;
-        for (DependencyOwningSpecificAttribute dependencyOwningCurrentAttribute : dictionaryOfDependenciesOwningSpecificAttribute.get(currentAttribute)) {
-            dependencyOwningCurrentAttribute.signalizeItsAttributeWasAssociatedWithClosure();
+        for (OperationalContainerAsDependencyOwningSpecificAttribute dependencyOwningCurrentAttribute : dictionaryOfDependenciesOwningSpecificAttributes.get(currentAttribute)) {
+            dependencyOwningCurrentAttribute.signalizeItsLeftAttributeWasAssociatedWithClosure();
             if (dependencyOwningCurrentAttribute.isDerivableFromCurrentClosure()){
                 FunctionalDependency derivableDependency=dependencyOwningCurrentAttribute.getAssociatedDependency();
                 updateClosureElementsWithNewDerivableDependency(derivableDependency,newClosureElements,currentClosure);
@@ -88,7 +91,7 @@ public class DependenciesOperationalSet extends LinkedList<FunctionalDependency>
     }
 
     public Attributes getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(Attributes baseOfClosureBuilding){
-        deriveDictionaryOfDependenciesOwningSpecificAttribute();
+        deriveDictionaryOfDependenciesOwningSpecificAttributes();
         Attributes closure=new AttributesHashSet(baseOfClosureBuilding);
         buildGivenClosure(closure);
         return closure;

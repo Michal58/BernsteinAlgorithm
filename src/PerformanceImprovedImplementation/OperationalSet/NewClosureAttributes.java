@@ -1,4 +1,4 @@
-package PerformanceImprovedImplementation.Structures;
+package PerformanceImprovedImplementation.OperationalSet;
 
 import BaseTemplateElements.Attribute;
 import CorrectnessBaseImplementation.Structures.AttributesHashSet;
@@ -6,7 +6,7 @@ import CorrectnessBaseImplementation.Structures.AttributesHashSet;
 import java.util.Collection;
 import java.util.Iterator;
 
-class NewClosureAttributes extends AttributesHashSet {
+public class NewClosureAttributes extends AttributesHashSet {
     public NewClosureAttributes(Collection<Attribute> setOfAttributes){
         super(setOfAttributes);
     }

@@ -1,11 +1,10 @@
 package PerformanceImprovedImplementation.TransitiveDependenciesRemoving;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.FunctionalDependency;
 import CommonElements.ListSet;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.GroupDependency;
-import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
+import PerformanceImprovedImplementation.OperationalSet.DependenciesOperationalSet;
 import PerformanceImprovedImplementation.Structures.MergedGroupsAndBijectionsAsListSets;
 
 import java.util.Collection;
@@ -19,7 +18,7 @@ public class TransitiveDependenciesRemover {
             associatedGroup.add(bijection);
         }
     }
-    public AlgorithmState removeTransitiveDependencies(MergedGroupsAndBijectionsAsListSets potentiallyPossibleTransitiveDependencies) {
+    public ListSet<DependenciesGrouping> removeTransitiveDependencies(MergedGroupsAndBijectionsAsListSets potentiallyPossibleTransitiveDependencies) {
         ListSet<GroupDependency> bijections=potentiallyPossibleTransitiveDependencies.bijectionsDependencies();
         ListSet<DependenciesGrouping> groups=potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies();
 

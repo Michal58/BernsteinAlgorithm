@@ -1,6 +1,5 @@
 package CorrectnessBaseImplementation.StepPerformers;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
 import CorrectnessBaseImplementation.Structures.AttributesHashSet;
@@ -10,12 +9,11 @@ import CorrectnessBaseImplementation.Structures.HashGroupOfFunctionalDependencie
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class DependenciesLeftSidesGrouper {
-    public AlgorithmState groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover) {
-        Map<Attributes, GroupOfFunctionalDependencies> leftAttributesDictionary=new GroupingAsDictionary();
+    public GroupingAsDictionary groupDependenciesByLeftSides(Set<FunctionalDependency> minimalCover) {
+        GroupingAsDictionary leftAttributesDictionary=new GroupingAsDictionary();
         for (FunctionalDependency dependency : minimalCover) {
             if (!leftAttributesDictionary.containsKey(dependency.getLeftAttributes())) {
                 Attributes newKey=new AttributesHashSet(dependency.getLeftAttributes());
@@ -28,6 +26,6 @@ public class DependenciesLeftSidesGrouper {
             }
         }
 
-        return (AlgorithmState) leftAttributesDictionary;
+        return leftAttributesDictionary;
     }
 }

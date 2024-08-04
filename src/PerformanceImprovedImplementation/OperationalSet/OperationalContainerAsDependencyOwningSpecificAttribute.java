@@ -1,16 +1,16 @@
-package PerformanceImprovedImplementation.Structures;
+package PerformanceImprovedImplementation.OperationalSet;
 
 import BaseTemplateElements.FunctionalDependency;
 
-public class DependencyOwningSpecificAttribute {
+public class OperationalContainerAsDependencyOwningSpecificAttribute {
     private FunctionalDependency associatedDependency;
     private int countOfAssociationsOfClosureWithLeftSideAttributes;
-    public DependencyOwningSpecificAttribute(FunctionalDependency associatedDependency){
+    public OperationalContainerAsDependencyOwningSpecificAttribute(FunctionalDependency associatedDependency){
         this.associatedDependency=associatedDependency;
         countOfAssociationsOfClosureWithLeftSideAttributes=0;
     }
 
-    public void signalizeItsAttributeWasAssociatedWithClosure(){
+    public void signalizeItsLeftAttributeWasAssociatedWithClosure(){
         countOfAssociationsOfClosureWithLeftSideAttributes++;
     }
 

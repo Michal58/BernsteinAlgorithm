@@ -1,7 +1,6 @@
 package PerformanceImprovedImplementation.Grouping;
 
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.FunctionalDependency;
 import CommonElements.ListSet;
 
@@ -19,7 +18,7 @@ public class DependenciesLeftSidesGrouper {
                 new GroupDependency(dependency);
     }
 
-    public AlgorithmState group(){
+    public ListSet<DependenciesGrouping> group(){
         DependenciesGrouping firstLeftAttributesGroup=
                 dependencies.stream()
                 .map(this::keepOrCreateGroupDependency)
