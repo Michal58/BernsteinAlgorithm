@@ -30,6 +30,6 @@ bin/
 
 BernsteinAlgorithm.iml
 .idea/
-localAdditioanlDir/
+localAdditionalDir/
 src/CorrectnessBaseImplementation/Testing/
 src/PerformanceImprovedImplementation/Testing/
