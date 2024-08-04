@@ -19,7 +19,7 @@ public class AttributesHashSet extends HashSet<Attribute> implements Attributes 
     }
 
     @Override
-    public Attributes copy() {
+    public Attributes shallowCopy() {
         return new AttributesHashSet(this);
     }
 }

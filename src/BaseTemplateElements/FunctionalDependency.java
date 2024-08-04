@@ -27,8 +27,8 @@ public abstract class FunctionalDependency {
     }
 
     public FunctionalDependency(Attributes leftAttributes,Attributes rightAttributes){
-        this.leftAttributes=leftAttributes.copy();
-        this.rightAttributes=rightAttributes.copy();
+        this.leftAttributes=leftAttributes.shallowCopy();
+        this.rightAttributes=rightAttributes.shallowCopy();
     }
     public void assignAttributesOfOtherDependency(FunctionalDependency otherDependency){
         this.leftAttributes= otherDependency.getLeftAttributes();

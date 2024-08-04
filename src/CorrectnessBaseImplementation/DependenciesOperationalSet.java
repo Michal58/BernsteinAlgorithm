@@ -1,6 +1,5 @@
 package CorrectnessBaseImplementation;
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
@@ -10,7 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DependenciesOperationalSet extends HashSet<FunctionalDependency> implements AlgorithmState {
+public class DependenciesOperationalSet extends HashSet<FunctionalDependency> implements CommonElements.DependenciesOperationalSet {
     public DependenciesOperationalSet(){
         super();
     }
