@@ -27,17 +27,17 @@ public class ExtraneousAttributesEliminator {
     }
 
     public FunctionalDependency createDependencyWithEliminatedExtraneousAttributesOnLeftSide(FunctionalDependency dependency){
-        FunctionalDependency copyOfDependency=dependency.getCopy();
-        Attributes primaryAttributes=copyOfDependency.getLeftAttributes().shallowCopy();
+        FunctionalDependency dependencyToLeftSideReduction=dependency.getCopy();
+        Attributes primaryAttributes=dependencyToLeftSideReduction.getLeftAttributes().shallowCopy();
 
         for (Attribute leftAttribute : primaryAttributes) {
-            eliminateLeftAttribute(copyOfDependency,leftAttribute);
-            boolean wasLeftAttributeExtraneous = operationalBaseDependenciesBeforeEliminating.checkIfThereIsTransitiveDependency(copyOfDependency);
+            eliminateLeftAttribute(dependencyToLeftSideReduction,leftAttribute);
+            boolean wasLeftAttributeExtraneous = operationalBaseDependenciesBeforeEliminating.checkIfThereIsTransitiveDependency(dependencyToLeftSideReduction);
             if (!wasLeftAttributeExtraneous)
-                restoreLeftAttribute(copyOfDependency,leftAttribute);
+                restoreLeftAttribute(dependencyToLeftSideReduction,leftAttribute);
         }
 
-        return copyOfDependency;
+        return dependencyToLeftSideReduction;
     }
     public AlgorithmState eliminateExtraneousAttributesFromLeftSidesOfDependencies(DependenciesOperationalSet baseDependencies){
         this.operationalBaseDependenciesBeforeEliminating = baseDependencies;

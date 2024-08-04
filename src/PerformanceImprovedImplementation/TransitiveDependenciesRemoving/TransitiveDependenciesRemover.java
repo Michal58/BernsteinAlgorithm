@@ -2,13 +2,11 @@ package PerformanceImprovedImplementation.TransitiveDependenciesRemoving;
 
 import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.FunctionalDependency;
-import CorrectnessBaseImplementation.Structures.BijectionDependenciesAndGroups;
+import CommonElements.ListSet;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.GroupDependency;
-import PerformanceImprovedImplementation.Grouping.MapImitatorGroupsHolder;
-import PerformanceImprovedImplementation.Merging.SetOfFunctionalDependencyImitatorBijectionsHolder;
 import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
-import PerformanceImprovedImplementation.Structures.ListSet;
+import PerformanceImprovedImplementation.Structures.MergedGroupsAndBijectionsAsListSets;
 
 import java.util.Collection;
 import java.util.Set;
@@ -21,9 +19,9 @@ public class TransitiveDependenciesRemover {
             associatedGroup.add(bijection);
         }
     }
-    public AlgorithmState removeTransitiveDependencies(BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies) {
-        Set<GroupDependency> bijections=((SetOfFunctionalDependencyImitatorBijectionsHolder)potentiallyPossibleTransitiveDependencies.bijectionsDependencies()).getHeldDependencies();
-        Set<DependenciesGrouping> groups=((MapImitatorGroupsHolder)potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies()).getGroups();
+    public AlgorithmState removeTransitiveDependencies(MergedGroupsAndBijectionsAsListSets potentiallyPossibleTransitiveDependencies) {
+        ListSet<GroupDependency> bijections=potentiallyPossibleTransitiveDependencies.bijectionsDependencies();
+        ListSet<DependenciesGrouping> groups=potentiallyPossibleTransitiveDependencies.groupsOfFunctionalDependencies();
 
         Set<FunctionalDependency> allGroupDependencies=
                 groups.stream()
@@ -38,6 +36,6 @@ public class TransitiveDependenciesRemover {
 
         assignBackBijectionsToTheirGroups(bijections);
 
-        return new MapImitatorGroupsHolder(groups);
+        return groups;
     }
 }

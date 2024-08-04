@@ -6,6 +6,9 @@ import java.util.Objects;
 public abstract class FunctionalDependency {
     private Attributes leftAttributes;
     private Attributes rightAttributes;
+    public enum ConstructorOverloader {
+        TO_REASSIGN
+    }
 
     public FunctionalDependency(){
         leftAttributes=null;

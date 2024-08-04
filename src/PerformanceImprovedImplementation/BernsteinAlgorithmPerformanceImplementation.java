@@ -1,20 +1,18 @@
 package PerformanceImprovedImplementation;
 
 import BaseTemplateElements.*;
+import CommonElements.ListSet;
 import CommonElements.ListSetOfDependencies;
 import CorrectnessBaseImplementation.StepPerformers.ExtraneousAttributesEliminator;
-import CorrectnessBaseImplementation.Structures.BijectionDependenciesAndGroups;
-import CorrectnessBaseImplementation.Structures.GroupOfFunctionalDependencies;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.DependenciesLeftSidesGrouper;
-import PerformanceImprovedImplementation.Grouping.MapImitatorGroupsHolder;
 import PerformanceImprovedImplementation.Merging.GroupsAndBijectionsMerger;
 import PerformanceImprovedImplementation.SchemasCreating.SchemasCreator;
 import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
+import PerformanceImprovedImplementation.Structures.MergedGroupsAndBijectionsAsListSets;
 import PerformanceImprovedImplementation.TransitiveDependenciesRemoving.TransitiveDependenciesRemover;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgorithmTemplate {
@@ -47,26 +45,25 @@ public class BernsteinAlgorithmPerformanceImplementation extends BernsteinAlgori
     public AlgorithmState groupDependenciesByLeftSides() {
         Set<FunctionalDependency> minimalCover=(DependenciesOperationalSet) getStateOfAlgorithm();
         DependenciesLeftSidesGrouper groupingPerformer=new DependenciesLeftSidesGrouper(minimalCover);
-        return (AlgorithmState) groupingPerformer.group();
+        return groupingPerformer.group();
     }
 
     @Override
     public AlgorithmState groupBijectionDependenciesAndMergeTheirGroups() {
-        MapImitatorGroupsHolder initialGroups=(MapImitatorGroupsHolder) getStateOfAlgorithm();
-        Set<DependenciesGrouping> actualInitialGroups= initialGroups.getGroups();
-        GroupsAndBijectionsMerger merger=new GroupsAndBijectionsMerger(actualInitialGroups);
+        Set<DependenciesGrouping> initialGroups=(Set<DependenciesGrouping>) getStateOfAlgorithm();
+        GroupsAndBijectionsMerger merger=new GroupsAndBijectionsMerger(initialGroups);
         return merger.mergeGroupsAndBijectionDependencies();
     }
     @Override
     public AlgorithmState removeTransitiveDependencies() {
-        BijectionDependenciesAndGroups potentiallyPossibleTransitiveDependencies=(BijectionDependenciesAndGroups) getStateOfAlgorithm();
+        MergedGroupsAndBijectionsAsListSets potentiallyPossibleTransitiveDependencies=(MergedGroupsAndBijectionsAsListSets) getStateOfAlgorithm();
         TransitiveDependenciesRemover dependenciesRemover=new TransitiveDependenciesRemover();
         return dependenciesRemover.removeTransitiveDependencies(potentiallyPossibleTransitiveDependencies);
     }
 
     @Override
     public AlgorithmState createRelationalSchemasFromGroupsOfFunctionalDependencies() {
-        Map<Attributes, GroupOfFunctionalDependencies> nonTransitiveDependencies=(Map<Attributes, GroupOfFunctionalDependencies>) getStateOfAlgorithm();
+        ListSet<DependenciesGrouping> nonTransitiveDependencies=(ListSet<DependenciesGrouping>) getStateOfAlgorithm();
         SchemasCreator creatorOfFinalSchemas=new SchemasCreator();
         return creatorOfFinalSchemas.createRelationalSchemasFromGroupsOfFunctionalDependencies(nonTransitiveDependencies);
     }

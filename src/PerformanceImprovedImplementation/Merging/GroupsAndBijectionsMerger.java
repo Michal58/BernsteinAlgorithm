@@ -1,13 +1,12 @@
 package PerformanceImprovedImplementation.Merging;
 
 import BaseTemplateElements.Attributes;
-import CorrectnessBaseImplementation.Structures.BijectionDependenciesAndGroups;
+import CommonElements.ListSet;
 import BaseTemplateElements.FunctionalDependency;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
 import PerformanceImprovedImplementation.Grouping.GroupDependency;
-import PerformanceImprovedImplementation.Grouping.MapImitatorGroupsHolder;
-import PerformanceImprovedImplementation.Structures.ListSet;
 import PerformanceImprovedImplementation.Structures.DependenciesOperationalSet;
+import PerformanceImprovedImplementation.Structures.MergedGroupsAndBijectionsAsListSets;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,12 +18,12 @@ public class GroupsAndBijectionsMerger {
     private Set<DependenciesGrouping> groups;
     private int[][] derivationMatrix;
     private DependenciesGrouping[] orderedGroups;
-    private Set<?> getDerivableDependencies(FunctionalDependency dependencyToCheck, DependenciesOperationalSet allDependencies){
+    private Set<? extends FunctionalDependency> getDerivableDependencies(FunctionalDependency dependencyToCheck, DependenciesOperationalSet allDependencies){
         allDependencies.getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(dependencyToCheck.getLeftAttributes());
         return allDependencies.getDerivableDependencies();
     }
 
-    private void assignIndexesToGroupsAndOrderThem(Set<DependenciesGrouping> groups){
+    private void assignIndexesToGroupsAndOrderThem(){
         int i=0;
         orderedGroups=new DependenciesGrouping[groups.size()];
         for (DependenciesGrouping group : groups) {
@@ -49,8 +48,8 @@ public class GroupsAndBijectionsMerger {
             markDerivationExistence(derivingIndex,derivedDependency.getAssociatedGroup().getIndexInDerivationMatrix());
     }
 
-    private void fillDerivationMatrix(Set<DependenciesGrouping> placedGroups, DependenciesOperationalSet allDependencies){
-        for (DependenciesGrouping group : placedGroups) {
+    private void fillDerivationMatrix(DependenciesOperationalSet allDependencies){
+        for (DependenciesGrouping group : groups) {
             GroupDependency anyDependencyFromGroup = group.get(0);
             Set<GroupDependency> derivableDependencies = (Set<GroupDependency>) getDerivableDependencies(anyDependencyFromGroup, allDependencies);
 
@@ -64,14 +63,15 @@ public class GroupsAndBijectionsMerger {
 
         GroupDependency leftToRightDependency=new GroupDependency(
                 anyMergingGroupDependency.getLeftAttributes()
-                ,anyMergedGroupDependency.getLeftAttributes()
+                , anyMergedGroupDependency.getLeftAttributes()
                 , mergingGroup
         );
         GroupDependency rightToLeftDependency=new GroupDependency(
                 anyMergedGroupDependency.getLeftAttributes()
-                ,anyMergingGroupDependency.getLeftAttributes()
+                , anyMergingGroupDependency.getLeftAttributes()
                 , mergingGroup
         );
+
         bijectionDependencies.add(leftToRightDependency);
         bijectionDependencies.add(rightToLeftDependency);
     }
@@ -94,7 +94,7 @@ public class GroupsAndBijectionsMerger {
         removeAttributesFromDependenciesOnRightSidesWhichBelongsToGivenAttributesOrRemoveWholeDependency(mergedGroup,mergingGroupAttributes);
     }
 
-    private void performMergingIntoGroupAndAddingBijectionDependenciesAndRemovingUnnecessaryDependencies(DependenciesGrouping group, Set<GroupDependency> bijectionDependencies){
+    private void performMergingIntoGroupAndUpdatingBijectionsAndRemovingUnnecessaryDependencies(DependenciesGrouping group, Set<GroupDependency> bijectionDependencies){
         int groupDerivationIndex= group.getIndexInDerivationMatrix();
         for (int i = 0; i < derivationMatrix.length; i++) {
             boolean isThereBijection=
@@ -113,30 +113,35 @@ public class GroupsAndBijectionsMerger {
         this.groups=groups;
     }
 
-    public BijectionDependenciesAndGroups mergeGroupsAndBijectionDependencies(){
+    public void prepareGroupsAndDerivationMatrixForProcessing(){
+        assignIndexesToGroupsAndOrderThem();
+        int countOfGroups=groups.size();
+        derivationMatrix=new int[countOfGroups][countOfGroups];
+        clearDerivationMatrix();
+    }
+
+    public MergedGroupsAndBijectionsAsListSets mergeGroupsAndBijectionDependencies(){
         DependenciesOperationalSet setOfAllDependencies=
                 new DependenciesOperationalSet(
                         groups.stream()
                                 .flatMap(Collection::stream)
-                                .collect(Collectors.toList()),true);
+                                .collect(Collectors.toList())
+                        ,true);
 
-        assignIndexesToGroupsAndOrderThem(groups);
-        int countOfGroups=groups.size();
-        derivationMatrix=new int[countOfGroups][countOfGroups];
-        clearDerivationMatrix();
+        prepareGroupsAndDerivationMatrixForProcessing();
 
-        fillDerivationMatrix(groups,setOfAllDependencies);
+        fillDerivationMatrix(setOfAllDependencies);
 
-        Set<GroupDependency> bijections=new ListSet<>();
-        Set<DependenciesGrouping> mergedGroups=new ListSet<>();
+        ListSet<GroupDependency> bijections=new ListSet<>();
+        ListSet<DependenciesGrouping> mergedGroups=new ListSet<>();
 
         for (DependenciesGrouping group : groups) {
-            if (!group.checkIfHasBecomeMerged()) {
-                performMergingIntoGroupAndAddingBijectionDependenciesAndRemovingUnnecessaryDependencies(group, bijections);
+            if (!group.hasBecomeMerged()) {
+                performMergingIntoGroupAndUpdatingBijectionsAndRemovingUnnecessaryDependencies(group, bijections);
                 mergedGroups.add(group);
             }
         }
 
-        return new BijectionDependenciesAndGroups(new SetOfFunctionalDependencyImitatorBijectionsHolder(bijections),new MapImitatorGroupsHolder(mergedGroups));
+        return new MergedGroupsAndBijectionsAsListSets(bijections,mergedGroups);
     }
 }

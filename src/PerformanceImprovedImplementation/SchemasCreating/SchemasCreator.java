@@ -1,23 +1,19 @@
 package PerformanceImprovedImplementation.SchemasCreating;
 
 import BaseTemplateElements.AlgorithmState;
-import BaseTemplateElements.Attributes;
 import BaseTemplateElements.RelationalSchema;
+import CommonElements.ListSet;
 import CorrectnessBaseImplementation.Structures.AttributesHashSet;
-import CorrectnessBaseImplementation.Structures.GroupOfFunctionalDependencies;
 import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
-import PerformanceImprovedImplementation.Grouping.MapImitatorGroupsHolder;
 import PerformanceImprovedImplementation.Structures.FinalImprovedSchemaSet;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SchemasCreator {
-    public AlgorithmState createRelationalSchemasFromGroupsOfFunctionalDependencies(Map<Attributes, GroupOfFunctionalDependencies> nonTransitiveDependencies) {
-        Set<DependenciesGrouping> groups=((MapImitatorGroupsHolder)nonTransitiveDependencies).getGroups();
+    public AlgorithmState createRelationalSchemasFromGroupsOfFunctionalDependencies(ListSet<DependenciesGrouping> nonTransitiveDependenciesGroups) {
         Function<DependenciesGrouping, RelationalSchema> schemaCreator= group ->
                 new RelationalSchema(new AttributesHashSet(
                         group.stream()
@@ -29,7 +25,7 @@ public class SchemasCreator {
 
 
         Set<RelationalSchema> schemas=
-                groups.stream()
+                nonTransitiveDependenciesGroups.stream()
                         .map(schemaCreator)
                         .collect(Collectors.toCollection(FinalImprovedSchemaSet::new));
 

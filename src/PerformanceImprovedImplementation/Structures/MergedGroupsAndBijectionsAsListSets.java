@@ -1,0 +1,9 @@
+package PerformanceImprovedImplementation.Structures;
+
+import BaseTemplateElements.AlgorithmState;
+import CommonElements.ListSet;
+import PerformanceImprovedImplementation.Grouping.DependenciesGrouping;
+import PerformanceImprovedImplementation.Grouping.GroupDependency;
+
+public record MergedGroupsAndBijectionsAsListSets(ListSet<GroupDependency> bijectionsDependencies, ListSet<DependenciesGrouping> groupsOfFunctionalDependencies) implements AlgorithmState {
+}

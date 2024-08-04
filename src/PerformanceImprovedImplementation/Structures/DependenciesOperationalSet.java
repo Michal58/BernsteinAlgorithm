@@ -1,15 +1,15 @@
 package PerformanceImprovedImplementation.Structures;
 
 
-import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.Attribute;
 import BaseTemplateElements.Attributes;
 import BaseTemplateElements.FunctionalDependency;
+import CommonElements.ListSet;
 import CorrectnessBaseImplementation.Structures.AttributesHashSet;
 
 import java.util.*;
 
-public class DependenciesOperationalSet extends ListSet<FunctionalDependency> implements CommonElements.DependenciesOperationalSet {
+public class DependenciesOperationalSet extends LinkedList<FunctionalDependency> implements CommonElements.DependenciesOperationalSet, Set<FunctionalDependency>, BaseTemplateElements.AlgorithmState {
     private final boolean shouldMemorizeDerivableDependencies;
     private class AssociatedDependencies extends LinkedList<DependencyOwningSpecificAttribute>{
     }
@@ -103,17 +103,6 @@ public class DependenciesOperationalSet extends ListSet<FunctionalDependency> im
     public boolean checkIfThereIsTransitiveDependency(FunctionalDependency possibleDependency){
         Attributes closureAttributes=getClosureOfAttributesAndPossiblyMemorizeAdditionalInformation(possibleDependency.getLeftAttributes());
         return closureAttributes.containsAll(possibleDependency.getRightAttributes());
-    }
-
-    public FunctionalDependency removeExtraneousAttributesFromLeftSideOfDependency(FunctionalDependency initialDependency){
-        FunctionalDependency copyOfDependency=initialDependency.getCopy();
-        for (Attribute leftAttribute : initialDependency.getLeftAttributes()) {
-            copyOfDependency.getLeftAttributes().remove(leftAttribute);
-            boolean wasLeftAttributeExtraneous=checkIfThereIsTransitiveDependency(copyOfDependency);
-            if (!wasLeftAttributeExtraneous)
-                copyOfDependency.getLeftAttributes().add(leftAttribute);
-        }
-        return copyOfDependency;
     }
 
     private class RemoverOfRightAttributes{

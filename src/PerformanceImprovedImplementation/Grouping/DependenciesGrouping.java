@@ -1,13 +1,12 @@
 package PerformanceImprovedImplementation.Grouping;
 
 import BaseTemplateElements.Attribute;
-import PerformanceImprovedImplementation.Structures.ListSet;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DependenciesGrouping extends ListSet<GroupDependency> {
+public class DependenciesGrouping extends java.util.LinkedList<GroupDependency> implements Set<GroupDependency>, BaseTemplateElements.AlgorithmState {
     private final static int INDEX_NOT_ASSIGNED=-1;
     private boolean hasBecomeMerged;
     private int indexInDerivationMatrix;
@@ -72,11 +71,8 @@ public class DependenciesGrouping extends ListSet<GroupDependency> {
         return indexInDerivationMatrix;
     }
 
-    public boolean checkIfHasBecomeMerged(){
+    public boolean hasBecomeMerged(){
         return hasBecomeMerged;
-    }
-    public void assignAsMerged(){
-        hasBecomeMerged=true;
     }
     public void mergeSecondGroupByAddingItsElementsWithMarkingItAsMerged(DependenciesGrouping groupToMerge){
         groupToMerge.markAsMerged();

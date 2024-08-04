@@ -1,37 +1,41 @@
 package PerformanceImprovedImplementation.Grouping;
 
 
-import BaseTemplateElements.Attributes;
+import BaseTemplateElements.AlgorithmState;
 import BaseTemplateElements.FunctionalDependency;
-import CorrectnessBaseImplementation.Structures.GroupOfFunctionalDependencies;
-import PerformanceImprovedImplementation.Structures.ListSet;
+import CommonElements.ListSet;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DependenciesLeftSidesGrouper {
     private final Set<FunctionalDependency> dependencies;
     public DependenciesLeftSidesGrouper(Set<FunctionalDependency> dependencies){
         this.dependencies=dependencies;
     }
-    public Map<Attributes, GroupOfFunctionalDependencies> group(){
-        DependenciesGrouping firstLeftAttributesGroup=new DependenciesGrouping();
-        dependencies.forEach(dependency ->
-                firstLeftAttributesGroup.add(dependency instanceof GroupDependency?
-                        (GroupDependency) dependency:
-                        new GroupDependency(dependency)));
+    public GroupDependency keepOrCreateGroupDependency(FunctionalDependency dependency){
+        return dependency instanceof GroupDependency?
+                (GroupDependency) dependency:
+                new GroupDependency(dependency);
+    }
+
+    public AlgorithmState group(){
+        DependenciesGrouping firstLeftAttributesGroup=
+                dependencies.stream()
+                .map(this::keepOrCreateGroupDependency)
+                .collect(Collectors.toCollection(DependenciesGrouping::new));
 
         ListSet<DependenciesGrouping> currentDependenciesGroupings= new ListSet<>();
         currentDependenciesGroupings.add(firstLeftAttributesGroup);
 
-        Set<DependenciesGrouping> readyGroups=new ListSet<>();
+        ListSet<DependenciesGrouping> readyGroups=new ListSet<>();
 
         while (!currentDependenciesGroupings.isEmpty()){
-            DependenciesGrouping groupToBeExtracted=currentDependenciesGroupings.removeFirst();
-            groupToBeExtracted.transformIntoReadyGroupingOfFirstDependency(currentDependenciesGroupings);
-            readyGroups.add(groupToBeExtracted);
+            DependenciesGrouping nextGroupForExtraction=currentDependenciesGroupings.removeFirst();
+            nextGroupForExtraction.transformIntoReadyGroupingOfFirstDependency(currentDependenciesGroupings);
+            readyGroups.add(nextGroupForExtraction);
         }
 
-        return new MapImitatorGroupsHolder(readyGroups);
+        return readyGroups;
     }
 }
